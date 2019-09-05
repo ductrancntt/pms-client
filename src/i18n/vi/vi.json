@@ -1,6 +1,8 @@
 {
   "login": {
-    "buttonLogin": "Đăng nhập",
+    "btnLogin": "Đăng nhập",
+    "btnRegister": "Đăng ký",
+    "btnConfirm": "Xác nhận",
     "usernameInput": "Tên đăng nhập",
     "passwordInput": "Mật khẩu"
   }

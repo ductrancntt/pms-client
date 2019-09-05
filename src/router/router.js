@@ -5,6 +5,7 @@ import Home from "@/views/home/Home"
 import Login from "@/views/login/Login"
 import Register from "@/views/register/Register"
 import Layout from "@/layout/Layout";
+import Activate from "@/views/account/Activate";
 
 Vue.use(Router);
 
@@ -16,8 +17,8 @@ const router = new Router({
             component: Layout,
             children: [
                 {
-                    path: paths.home,
-                    name: 'home',
+                    path: paths.homeUrl,
+                    name: 'homePage',
                     component: Home,
                     meta: {
                         title: "Home Page"
@@ -26,19 +27,27 @@ const router = new Router({
             ]
         },
         {
-            path: paths.login,
-            name: 'login',
+            path: paths.loginUrl,
+            name: 'loginPage',
             component: Login,
             meta: {
                 title: "Login"
             },
         },
         {
-            path: paths.register,
-            name: 'register',
+            path: paths.registerUrl,
+            name: 'registerPage',
             component: Register,
             meta: {
                 title: "Register"
+            },
+        },
+        {
+            path: paths.account.activate,
+            name: 'activatePage',
+            component: Activate,
+            meta: {
+                title: "Account Activation"
             },
         },
     ]

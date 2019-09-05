@@ -1,5 +1,5 @@
 <template>
-    <el-row type="flex" justify="center">
+    <el-row type="flex" justify="center" align="center">
         <el-col :span="6">
             <el-form
                     :inline="false"
@@ -9,7 +9,7 @@
                     ref="loginForm">
 
                 <el-form-item :label="$t('login.usernameInput')" prop="username">
-                    <el-input v-model="formData.username" placeholder="Username"></el-input>
+                    <el-input v-model="formData.usernameOrEmail" placeholder="Username"></el-input>
                 </el-form-item>
 
                 <el-form-item :label="$t('login.passwordInput')" prop="password">
@@ -17,7 +17,10 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button type="primary" @click="login">{{ $t('login.buttonLogin') }}</el-button>
+                    <el-button type="primary" @click="login">{{ $t('login.btnLogin') }}</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="success" @click="register">{{ $t('login.btnRegister') }}</el-button>
                 </el-form-item>
 
             </el-form>
@@ -26,16 +29,17 @@
 </template>
 
 <script>
-    import auth from '@/security/authentication';
-    import validation from '@/views/login/form-validation';
+    import Auth from '@/security/authentication';
+    import Validation from '@/views/login/form-validation';
+    import AlertService from "@/service/alert";
 
     export default {
         name: "Login",
-        mixins: [validation],
+        mixins: [Validation],
         data() {
             return {
                 formData: {
-                    username: "",
+                    usernameOrEmail: "",
                     password: "",
                 },
             }
@@ -45,19 +49,28 @@
                 this.$refs["loginForm"].validate(async valid => {
                     if (valid) {
                         try {
-                            const status = await auth.authenticate(this.formData.username, this.formData.password);
+                            const status = await Auth.login(this.formData);
                             if (status) {
                                 await this.$router.push({path: "/"});
                             } else {
-                                // alert failure message
+                                AlertService.error("Error", "Can't login!");
                             }
                         } catch (ex) {
-                            console.log(ex);
-                            // alert failure message
+                            if (ex.response){
+                                if (ex.response.status == 401){
+                                    AlertService.error("Error", "Wrong username or password!");
+                                } else {
+                                    AlertService.error(ex.name, ex.message);
+                                }
+                            } else {
+                                AlertService.error(ex.name, ex.message);
+                            }
                         }
                     }
                 });
-
+            },
+            register(){
+                this.$router.push({path: "/register"});
             }
         }
     }

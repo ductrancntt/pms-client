@@ -1,5 +1,8 @@
 export default {
-    home: '/',
-    login: '/login',
-    register: '/register'
+    homeUrl: '/',
+    loginUrl: '/login',
+    registerUrl: '/register',
+    account: {
+        activate: "/activate"
+    }
 }

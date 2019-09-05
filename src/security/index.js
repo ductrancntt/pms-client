@@ -3,8 +3,9 @@ import auth from '@/security/authentication';
 import path from "@/router/path";
 
 const publicPages = [
-    path.login,
-    path.register,
+    path.loginUrl,
+    path.registerUrl,
+    path.account.activate,
 ];
 
 function isPublicPage(page) {
@@ -13,17 +14,18 @@ function isPublicPage(page) {
 
 router.beforeEach((to, from, next) => {
     if (auth.isAuthenticated()) {
-        if (to.path == path.login) {
-            next(path.home);
+        if (to.path == path.loginUrl) {
+            next(path.homeUrl);
         } else {
             next();
         }
     } else {
+        auth.logout();
         // case user un authenticate
         if (isPublicPage(to.path)) {
             next();
         } else {
-            next(path.login);
+            next(path.loginUrl);
         }
     }
 });

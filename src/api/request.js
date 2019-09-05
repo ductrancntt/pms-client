@@ -4,13 +4,24 @@ function getToken() {
     return localStorage.getItem('access-token');
 }
 
-const baseDomain = "http://localhost:8888";
-const baseUrl = `${baseDomain}/api`;
+const baseUrl = "http://localhost:8888";
+const timeout = 10000;
 
-export default axios.create({
+const http = axios.create ({
     baseURL: baseUrl,
-    timeout: 10000,
-    headers: {
-        "Authorization": (getToken() != null && getToken() != undefined) ? "Bearer" + getToken() : "",
-    }
+    timeout: timeout,
+    headers: {'Content-Type': 'application/json'},
 });
+
+http.interceptors.request.use (
+    function (config) {
+        const token = getToken()
+        if (token != null || token != undefined) config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    function (error) {
+        return Promise.reject (error);
+    }
+);
+
+export default http;

@@ -1,8 +1,0 @@
-{
-  "login" : {
-    "buttonLogin" : "Login",
-    "usernameInput" : "Username",
-    "passwordInput" : "Password"
-  },
-  "welcome" : "Welcome"
-}

@@ -10,8 +10,9 @@ export default {
 }
 </script>
 
-<style>
-  @import './assets/css/custom-scrollbar.css';
+<style lang="scss">
+  @import 'assets/style/custom-scrollbar.css';
+  @import 'assets/style/element-variables.scss';
   html, body, #app {
     height: 100%;
     margin: 0;

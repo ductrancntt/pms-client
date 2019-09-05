@@ -2,7 +2,7 @@ export default {
     data(){
         return {
             rules: {
-                username: [
+                usernameOrEmail: [
                     { required: true, message: "Please enter username", trigger: "blur" },
                     { validator: this.isEmail, message: "Please enter valid email", trigger:"blur"}
                 ],
