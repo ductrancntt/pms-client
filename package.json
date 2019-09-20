@@ -1,5 +1,5 @@
 {
-  "name": "qlda-client",
+  "name": "pms-client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,6 +13,7 @@
     "element-ui": "^2.11.1",
     "js-cookie": "^2.2.1",
     "reset-css": "^4.0.1",
+    "sweetalert2": "^8.17.4",
     "vee-validate": "^3.0.3",
     "vue": "^2.6.10",
     "vue-i18n": "^8.14.0",

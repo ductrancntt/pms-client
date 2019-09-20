@@ -24,6 +24,7 @@
 <style scoped>
     #main-container{
         height: 100%;
+        background: white;
     }
     .el-header {
         background-color: #B3C0D1;

@@ -1,4 +1,4 @@
-# qlda-client
+# pms-client
 
 ## Project setup
 ```

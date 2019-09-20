@@ -15,20 +15,19 @@
 </template>
 
 <script>
-    import Auth from "@/security/authentication";
-    import Path from "@/router/path";
+    import Auth from "@/security/auth.service";
 
     export default {
         name: "Header",
         data() {
             return {
-                user: Auth.getCurrentUser()
+                user: Auth.getCurrentUser() ? Auth.getCurrentUser() : {}
             }
         },
         methods: {
             logout() {
                 Auth.logout();
-                this.$router.push({path: Path.loginUrl});
+                this.$router.push({name: 'loginPage'});
             }
         }
     }

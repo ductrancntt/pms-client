@@ -1,21 +1,26 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+    <div id="vue-app" :style="{backgroundImage: 'url('+require('@/assets/images/bg.jpg')+')'}">
+        <router-view/>
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'app',
-}
+    export default {
+        name: 'App',
+    }
 </script>
 
 <style lang="scss">
-  @import 'assets/style/custom-scrollbar.css';
-  @import 'assets/style/element-variables.scss';
-  html, body, #app {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+    @import 'assets/style/custom-scrollbar.css';
+    @import 'assets/style/element-variables.scss';
+
+    html, body, #vue-app {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #vue-app {
+        display: flex;
+    }
 </style>

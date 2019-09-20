@@ -2,7 +2,7 @@
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
         <el-menu :default-openeds="[]">
             <el-submenu index="1">
-                <template slot="title"><i class="el-icon-message"></i>Navigator One</template>
+                <template slot="title"><i class="el-icon-message"></i>Project</template>
                 <el-menu-item-group>
                     <template slot="title">Group 1</template>
                     <el-menu-item index="1-1">Option 1</el-menu-item>

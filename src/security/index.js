@@ -1,31 +1,21 @@
-import router from '../router/router';
-import auth from '@/security/authentication';
-import path from "@/router/path";
-
-const publicPages = [
-    path.loginUrl,
-    path.registerUrl,
-    path.account.activate,
-];
-
-function isPublicPage(page) {
-    return publicPages.indexOf(page) > -1;
-}
+import router from "@/router";
+import AuthService from "@/security/auth.service";
 
 router.beforeEach((to, from, next) => {
-    if (auth.isAuthenticated()) {
-        if (to.path == path.loginUrl) {
-            next(path.homeUrl);
+    if (!to.matched.length) {
+        next('/not-found');
+    }
+    if (to.meta && to.meta.authorities && to.meta.authorities.length > 0) {
+        if (!AuthService.hasAuthority(to.meta.authorities)) {
+            if (!AuthService.isAuthenticated()) {
+                next('/login');
+            } else
+                next('/forbidden');
         } else {
             next();
         }
     } else {
-        auth.logout();
-        // case user un authenticate
-        if (isPublicPage(to.path)) {
-            next();
-        } else {
-            next(path.loginUrl);
-        }
+        // no authorities, so just proceed
+        next();
     }
 });

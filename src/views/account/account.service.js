@@ -1,7 +1,7 @@
-import request from "@/api/request";
+import request from "@/config/api/request";
 
 const baseUrl = "api/account";
-export default {
+let AccountService = {
     authenticate(payload) {
         return request.post(
             baseUrl + "/authenticate",
@@ -55,10 +55,11 @@ export default {
             JSON.stringify(payload)
         )
     },
-    checkResetKey(payload){
-        return request.post(
-            baseUrl + "/reset_password/check",
-            JSON.stringify(payload)
+    getProject(payload){
+        return request.get(
+            'api/projects/' + payload
         )
     }
-}
+};
+
+export default AccountService;

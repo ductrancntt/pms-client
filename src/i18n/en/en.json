@@ -1,19 +1,19 @@
 {
-  "login" : {
+  "login": {
     "btnLogin": "Login",
     "btnRegister": "Register",
-    "usernameInput" : "Username",
-    "passwordInput" : "Password"
+    "usernameInput": "Username",
+    "passwordInput": "Password"
   },
-  "register" : {
-    "btnConfirm": "Confirm",
+  "register": {
+    "btnConfirm": "Confirm Registration",
     "btnLogin": "Login",
-    "username" : "Username",
-    "password" : "Password",
-    "email" : "Email",
-    "langKey" : "Language",
-    "firstName" : "First Name",
-    "lastName" : "Last Name"
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "langKey": "Language",
+    "firstName": "First Name",
+    "lastName": "Last Name"
   },
-  "welcome" : "Welcome"
+  "welcome": "Welcome"
 }
