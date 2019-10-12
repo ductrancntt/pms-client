@@ -1,6 +1,6 @@
 import Home from "@/views/home/Home"
 
-const ChildRoutes = [
+const PrivateRoutes = [
     {
         path: '/',
         name: 'homePage',
@@ -12,4 +12,4 @@ const ChildRoutes = [
     },
 ];
 
-export default ChildRoutes;
+export default PrivateRoutes;

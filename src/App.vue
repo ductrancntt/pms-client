@@ -11,9 +11,6 @@
 </script>
 
 <style lang="scss">
-    @import 'assets/style/custom-scrollbar.css';
-    @import 'assets/style/element-variables.scss';
-
     html, body, #vue-app {
         height: 100%;
         margin: 0;

@@ -1,8 +1,8 @@
 import Vue from "vue"
 import Router from "vue-router"
 import Layout from "@/layout/Layout";
-import ChildRoutes from "@/router/child-route";
-import CommonRoutes from "@/router/common-route";
+import PrivateRoutes from "@/router/private-route";
+import PublicRoutes from "@/router/public-route";
 
 Vue.use(Router);
 
@@ -13,10 +13,10 @@ const router = new Router({
             path: '',
             component: Layout,
             children: [
-                ...ChildRoutes
+                ...PrivateRoutes
             ]
         },
-        ...CommonRoutes
+        ...PublicRoutes
     ]
 });
 

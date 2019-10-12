@@ -46,13 +46,13 @@ let AccountService = {
     resetPasswordRequest(payload){
         return request.post(
             baseUrl + "/reset_password/request",
-            JSON.stringify(payload)
+            payload
         )
     },
     resetPasswordFinish(payload){
         return request.post(
             baseUrl + "/reset_password/finish",
-            JSON.stringify(payload)
+            payload
         )
     },
     getProject(payload){

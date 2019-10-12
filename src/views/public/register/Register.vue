@@ -35,18 +35,6 @@
                     <el-form-item :label="$t('register.email')" prop="email">
                         <el-input v-model="formData.email"></el-input>
                     </el-form-item>
-
-                    <!--                    <el-form-item class="hidden" :label="$t('register.langKey')" prop="langKey">-->
-                    <!--                        <el-select v-model="formData.langKey" value-key="formData.langKey">-->
-                    <!--                            <el-option-->
-                    <!--                                    v-for="item in languages"-->
-                    <!--                                    :key="item.id"-->
-                    <!--                                    :label="item.label"-->
-                    <!--                                    :value="item.value">-->
-                    <!--                            </el-option>-->
-                    <!--                        </el-select>-->
-                    <!--                    </el-form-item>-->
-
                     <el-form-item>
                         <el-button class="btn-block" type="success" @click="register">{{ $t('register.btnConfirm') }}
                         </el-button>
@@ -113,13 +101,13 @@
         },
         methods: {
             register() {
-                this.$refs["registerForm"].validate(async valid => {
+                let vm = this;
+                vm.$refs["registerForm"].validate(async valid => {
                     if (valid) {
                         AccountService.register(this.formData).then(response => {
-                            router.push({name: 'loginPage'});
                             SweetAlert.success("Success", "Account has been created, check email for activation!", "Go to login")
                                 .then(function (result) {
-                                    router.push({name: 'loginPage'})
+                                    vm.$router.push({name: 'loginPage'})
                                 })
                         }).catch(error => {
                             this.$notify({

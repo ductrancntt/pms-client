@@ -2,8 +2,10 @@ import Login from "@/views/public/login/Login"
 import Register from "@/views/public/register/Register"
 import Activate from "@/views/account/activate/Activate";
 import Error from "@/views/public/error/Error";
+import ResetInit from "@/views/public/reset/ResetInit";
+import ResetFinish from "@/views/public/reset/ResetFinish";
 
-const CommonRoutes = [
+const PublicRoutes = [
     {
         path: '/login',
         name: 'loginPage',
@@ -29,6 +31,22 @@ const CommonRoutes = [
         },
     },
     {
+        path: '/reset-init',
+        name: 'resetInitPage',
+        component: ResetInit,
+        meta: {
+            title: "Password Reset"
+        },
+    },
+    {
+        path: '/reset-finish',
+        name: 'resetFinishPage',
+        component: ResetFinish,
+        meta: {
+            title: "Complete Password Reset"
+        },
+    },
+    {
         path: '/forbidden',
         name: 'forbiddenPage',
         component: Error,
@@ -48,4 +66,4 @@ const CommonRoutes = [
     }
 ];
 
-export default CommonRoutes;
+export default PublicRoutes;

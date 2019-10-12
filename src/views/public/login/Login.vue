@@ -1,5 +1,5 @@
 <template>
-    <el-container style="align-items: center;">
+    <el-container v-loading.fullscreen.lock="isLogging" style="align-items: center;">
 
         <el-row type="flex" style="flex: 1" justify="center">
             <el-col :span="7">
@@ -18,7 +18,7 @@
                     </el-form-item>
 
                     <el-form-item>
-                        <el-link href="/forgot-password" target="_blank" type="primary">Forgot your password?
+                        <el-link href="/reset-init" target="_blank" type="primary">Forgot your password?
                         </el-link>
                     </el-form-item>
 
@@ -53,29 +53,34 @@
                     username: "",
                     password: "",
                 },
+                isLogging: false
             }
         },
         methods: {
             login() {
+                let vm = this;
                 this.$refs["loginForm"].validate(async valid => {
                     if (valid) {
+                        vm.isLogging = true;
                         AccountService.authenticate(this.formData)
                             .then(response => {
-                                console.log(response);
                                 AuthService.setToken(response.accessToken);
                                 AccountService.getCurrentAccount()
                                     .then(account => {
                                         AuthService.setCurrentUser(account);
                                         AuthService.setUserAuthorities(account.authorities);
+                                        vm.isLogging = false;
                                         this.$router.push({path: "/"});
                                     })
                                     .catch(error => {
-                                        AlertService.error("Login failed");
+                                        vm.isLogging = false;
+                                        AlertService.error(error.message);
                                         AuthService.logout();
                                     });
 
                             })
                             .catch(error => {
+                                vm.isLogging = false;
                                 AlertService.error(error.message);
                                 AuthService.logout();
                             });

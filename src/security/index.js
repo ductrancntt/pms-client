@@ -9,8 +9,9 @@ router.beforeEach((to, from, next) => {
         if (!AuthService.hasAuthority(to.meta.authorities)) {
             if (!AuthService.isAuthenticated()) {
                 next('/login');
-            } else
+            } else {
                 next('/forbidden');
+            }
         } else {
             next();
         }

@@ -8,8 +8,8 @@ import lang from 'element-ui/lib/locale/lang/en';
 import locale from 'element-ui/lib/locale';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'reset-css';
-import '@/assets/style/common.css'
 import '@/security';
+import '@/assets/styles/app.scss';
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;

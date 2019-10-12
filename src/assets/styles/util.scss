@@ -1,0 +1,59 @@
+/* ductv */
+@mixin textAlign() {
+  @each $direction in ("center", "left", "right") {
+    .text-#{$direction} {
+      text-align: #{$direction};
+    }
+  }
+}
+@include textAlign;
+
+/* flex */
+.flex {
+  display: flex;
+}
+
+.vertical-center {
+  align-items: center;
+}
+
+.horizontal-center {
+  justify-content: center;
+}
+
+@mixin flexSize {
+  @for $i from 1 through 100 {
+    .flex-#{$i} {
+      flex: $i;
+    }
+  }
+}
+@include flexSize;
+
+/* margin, padding */
+$max-size: 10000;
+$types: ('margin', 'padding');
+$positions: ('top', 'right', 'bottom', 'left');
+
+@mixin marginPadding {
+  @each $type in $types {
+    @each $pos in $positions {
+      @for $value from 0 through $max-size {
+        .#{$type}-#{$pos}-#{$value} {
+          #{$type}-#{$pos}: #{$value}px;
+        }
+      }
+    }
+  }
+  @each $type in $types {
+    @for $value from 0 through $max-size {
+      .#{$type}-#{$value} {
+        #{$type}: #{$value}px;
+      }
+    }
+  }
+}
+
+@include marginPadding;
+
+/*=========*/

@@ -1,0 +1,65 @@
+<template>
+    <el-container style="align-items: center;">
+
+        <el-row type="flex" style="flex: 1" justify="center">
+            <el-col :span="7">
+                <el-form
+                        :inline="false"
+                        class="form-style"
+                        :rules="rules"
+                        :model="form"
+                        ref="loginForm">
+                    <el-form-item label="Email" prop="email">
+                        <el-input v-model="form.email" placeholder="Enter your email"></el-input>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <el-button :disabled="form.email == '' || isSaving" style="width: 100%" type="success" @click="reset">Reset Password
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </el-row>
+    </el-container>
+</template>
+
+<script>
+    import AccountService from "@/views/account/account.service";
+    import SweetAlert from "@/service/sweet-alert.service";
+
+    export default {
+        name: "Reset",
+        data() {
+            return {
+                form: {
+                    email: null
+                },
+                isSaving: false,
+                rules: {
+                    email: [
+                        {required: true, message: "Please enter email", trigger: "blur"}
+                    ]
+                }
+            }
+        },
+        methods: {
+            reset(){
+                let vm = this;
+                vm.isSaving = true;
+                AccountService.resetPasswordRequest(this.form.email).then(response => {
+                    SweetAlert.success("Success", "Check your email for password reset", "Go to login").then(function (result) {
+                        vm.$router.push({name: 'loginPage'})
+                    });
+                    vm.isSaving = false;
+                }).catch(err => {
+                    vm.isSaving = false;
+                    SweetAlert.error("Error", "Sorry! Something went wrong", "OK");
+                })
+            }
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>
