@@ -8,3 +8,7 @@
 @import "override.css";
 @import "colors.css";
 @import "custom-flex.css";
+
+/*calendar*/
+@import '~@fullcalendar/core/main.css';
+@import '~@fullcalendar/daygrid/main.css';

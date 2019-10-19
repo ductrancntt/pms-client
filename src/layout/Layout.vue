@@ -2,7 +2,7 @@
     <el-container direction="horizontal">
         <el-container direction="vertical">
             <Header></Header>
-            <el-main class="row">
+            <el-main class="row padding-0">
                 <router-view>
                     <!--Content goes here-->
                 </router-view>
