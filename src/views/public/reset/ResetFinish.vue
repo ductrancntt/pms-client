@@ -1,25 +1,26 @@
 <template>
-    <el-container style="align-items: center;">
-        <el-row type="flex" style="flex: 1" justify="center">
+    <el-container class="v-center">
+        <el-row class="row flex-1 h-center">
             <el-col :span="7">
-                <el-form
-                        :inline="false"
-                        class="form-style"
-                        :rules="rules"
-                        :model="form"
-                        ref="loginForm">
-                    <el-form-item label="New password" prop="newPassword">
-                        <el-input type="password" v-model="form.newPassword" placeholder="New password"></el-input>
-                    </el-form-item>
-                    <el-form-item label="Confirm new password" prop="confirm">
-                        <el-input type="password" v-model="confirm" placeholder="Confirm"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button :disabled="isSaving || !isFormValid" style="width: 100%" type="success"
-                                   @click="reset">Reset Password
-                        </el-button>
-                    </el-form-item>
-                </el-form>
+                <el-card shadow="never">
+                    <el-form
+                            :inline="false"
+                            :rules="rules"
+                            :model="form"
+                            ref="loginForm">
+                        <el-form-item label="New password" prop="newPassword">
+                            <el-input type="password" v-model="form.newPassword" placeholder="New password"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Confirm new password" prop="confirm">
+                            <el-input type="password" v-model="confirm" placeholder="Confirm"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button :disabled="isSaving || !isFormValid" style="width: 100%" type="primary"
+                                       @click="reset">Reset Password
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
             </el-col>
         </el-row>
     </el-container>
@@ -35,8 +36,8 @@
         data() {
             return {
                 form: {
-                    key: null,
-                    newPassword: null
+                    key: '',
+                    newPassword: ''
                 },
                 confirm: null,
                 isSaving: false,

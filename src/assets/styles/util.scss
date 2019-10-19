@@ -6,28 +6,30 @@
     }
   }
 }
+
 @include textAlign;
 
-/* flex */
-.flex {
-  display: flex;
+@mixin sizePercent() {
+  @each $size in ("width", "height") {
+    @for $value from 0 through 100 {
+      .#{$size}-#{$value} {
+        #{$size}: percentage($value/100);
+      }
+    }
+  }
 }
 
-.vertical-center {
-  align-items: center;
-}
-
-.horizontal-center {
-  justify-content: center;
-}
+@include sizePercent;
 
 @mixin flexSize {
   @for $i from 1 through 100 {
     .flex-#{$i} {
       flex: $i;
+      box-sizing: border-box;
     }
   }
 }
+
 @include flexSize;
 
 /* margin, padding */

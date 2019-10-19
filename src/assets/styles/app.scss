@@ -1,4 +1,10 @@
+@import '~reset-css/reset.css';
+@import '~element-ui/lib/theme-chalk/index.css';
+/* custom */
 @import "common.css";
-@import "util";
-@import "element-variables";
+@import "util.scss";
+@import "element-variables.scss";
 @import "custom-scrollbar.css";
+@import "override.css";
+@import "colors.css";
+@import "custom-flex.css";

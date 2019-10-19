@@ -1,9 +1,8 @@
 <template>
-    <el-container id="main-container" direction="horizontal">
-        <Sidebar></Sidebar>
+    <el-container direction="horizontal">
         <el-container direction="vertical">
             <Header></Header>
-            <el-main>
+            <el-main class="row">
                 <router-view>
                     <!--Content goes here-->
                 </router-view>
@@ -22,22 +21,5 @@
 </script>
 
 <style scoped>
-    #main-container{
-        height: 100%;
-        background: white;
-    }
-    .el-header {
-        background-color: #B3C0D1;
-        color: #333;
-        line-height: 60px;
-    }
 
-    .el-aside {
-        color: #333;
-    }
-
-    .el-footer {
-        background-color: #B3C0D1;
-        color: #333;
-    }
 </style>

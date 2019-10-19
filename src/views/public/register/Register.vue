@@ -1,11 +1,11 @@
 <template>
-    <el-container style="align-items: center;">
+    <el-container class="v-center">
 
-        <el-row type="flex" style="flex: 1" justify="center">
+        <el-row class="row flex-1 h-center">
             <el-col :span="7">
                 <el-form
+                        @keyup.enter.native="register"
                         :inline="false"
-                        class="form-style"
                         :rules="rules"
                         :model="formData"
                         ref="registerForm">
@@ -36,11 +36,13 @@
                         <el-input v-model="formData.email"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button class="btn-block" type="success" @click="register">{{ $t('register.btnConfirm') }}
+                        <el-button class="width-100" type="success" @click="register">
+                            {{ $t('register.btnConfirm') }}
                         </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button class="btn-block" type="primary" @click="login">{{ $t('register.btnLogin') }}
+                        <el-button class="width-100" type="primary" @click="login">
+                            {{ $t('register.btnLogin') }}
                         </el-button>
                     </el-form-item>
 
@@ -53,7 +55,6 @@
 <script>
     import AccountService from "@/views/account/account.service";
     import SweetAlert from "@/service/sweet-alert.service";
-    import router from "vue-router";
 
     export default {
         name: "Register",
@@ -127,10 +128,4 @@
 </script>
 
 <style scoped>
-    .form-style {
-        background-color: whitesmoke;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0 rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
-    }
 </style>

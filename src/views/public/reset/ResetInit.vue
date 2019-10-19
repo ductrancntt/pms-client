@@ -1,23 +1,24 @@
 <template>
-    <el-container style="align-items: center;">
+    <el-container class="v-center">
 
-        <el-row type="flex" style="flex: 1" justify="center">
+        <el-row class="row flex-1 h-center">
             <el-col :span="7">
-                <el-form
-                        :inline="false"
-                        class="form-style"
-                        :rules="rules"
-                        :model="form"
-                        ref="loginForm">
-                    <el-form-item label="Email" prop="email">
-                        <el-input v-model="form.email" placeholder="Enter your email"></el-input>
-                    </el-form-item>
+                <el-card shadow="never">
+                    <el-form
+                            :inline="false"
+                            :rules="rules"
+                            :model="form"
+                            ref="loginForm">
+                        <el-form-item label="Email" prop="email">
+                            <el-input v-model="form.email" placeholder="Enter your email"></el-input>
+                        </el-form-item>
 
-                    <el-form-item>
-                        <el-button :disabled="form.email == '' || isSaving" style="width: 100%" type="success" @click="reset">Reset Password
-                        </el-button>
-                    </el-form-item>
-                </el-form>
+                        <el-form-item>
+                            <el-button :disabled="form.email == '' || form.email == null || isSaving" style="width: 100%" type="primary" @click="reset">Reset Password
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
             </el-col>
         </el-row>
     </el-container>

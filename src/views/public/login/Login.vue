@@ -1,38 +1,43 @@
 <template>
-    <el-container v-loading.fullscreen.lock="isLogging" style="align-items: center;">
+    <el-container v-loading.fullscreen.lock="isLogging" class="v-center">
+        <el-row class="row flex-1 h-center">
+            <el-col :span="6">
+                <el-card shadow="never">
+                    <el-form
+                            @keyup.enter.native="login"
+                            :inline="false"
+                            :rules="rules"
+                            :model="formData"
+                            ref="loginForm">
+                        <el-form-item :label="$t('login.usernameInput')" prop="username">
+                            <el-input v-model="formData.username" placeholder="Username or email"></el-input>
+                        </el-form-item>
 
-        <el-row type="flex" style="flex: 1" justify="center">
-            <el-col :span="7">
-                <el-form
-                        :inline="false"
-                        class="form-style"
-                        :rules="rules"
-                        :model="formData"
-                        ref="loginForm">
-                    <el-form-item :label="$t('login.usernameInput')" prop="username">
-                        <el-input v-model="formData.username" placeholder="Username or email"></el-input>
-                    </el-form-item>
+                        <el-form-item :label="$t('login.passwordInput')" prop="password">
+                            <el-input type="password" v-model="formData.password" placeholder="Password"></el-input>
+                        </el-form-item>
 
-                    <el-form-item :label="$t('login.passwordInput')" prop="password">
-                        <el-input type="password" v-model="formData.password" placeholder="Password"></el-input>
-                    </el-form-item>
+                        <el-form-item>
+                            <el-link href="/reset-init" target="_blank" type="primary">
+                                Forgot your password?
+                            </el-link>
+                        </el-form-item>
 
-                    <el-form-item>
-                        <el-link href="/reset-init" target="_blank" type="primary">Forgot your password?
-                        </el-link>
-                    </el-form-item>
+                        <el-form-item>
+                            <el-button class="width-100" type="primary" @click="login">
+                                {{ $t('login.btnLogin') }}
+                            </el-button>
+                        </el-form-item>
 
-                    <el-form-item>
-                        <el-button style="width: 100%" type="primary" @click="login">{{ $t('login.btnLogin') }}
-                        </el-button>
-                    </el-form-item>
+                        <el-form-item>
+                            <el-button class="width-100" type="success" @click="register">
+                                {{ $t('login.btnRegister') }}
+                            </el-button>
+                        </el-form-item>
 
-                    <el-form-item>
-                        <el-button style="width: 100%" type="success" @click="register">{{ $t('login.btnRegister') }}
-                        </el-button>
-                    </el-form-item>
+                    </el-form>
+                </el-card>
 
-                </el-form>
             </el-col>
         </el-row>
     </el-container>
@@ -96,10 +101,4 @@
 
 <style scoped>
 
-    .form-style {
-        background-color: whitesmoke;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0 rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
-    }
 </style>

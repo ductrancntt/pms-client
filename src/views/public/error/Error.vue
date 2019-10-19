@@ -1,10 +1,10 @@
 <template>
-    <el-container style="align-items: center;">
-        <el-row type="flex" style="flex: 1" justify="center">
+    <el-container class="v-center">
+        <el-row class="row flex-1 h-center">
             <el-col :span="7">
                 <el-form
                         :inline="false"
-                        class="form-style text-center"
+                        class="text-center"
                         ref="errorForm">
 
                     <el-form-item v-if="error403">

@@ -3,9 +3,9 @@
         <el-row type="flex" style="flex: 1" justify="center">
             <el-col :span="7">
                 <el-form :v-loading="isLoading"
-                        :inline="false"
-                        class="form-style text-center"
-                        ref="successForm">
+                         :inline="false"
+                         class="form-style text-center"
+                         ref="successForm">
 
                     <el-form-item v-if="!isLoading && activateStatus">
                         <img style="width: 100px; height: 100px;" src="../../../assets/images/success.png"

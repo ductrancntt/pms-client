@@ -1,32 +1,67 @@
 <template>
-    <div class="home">
-        <img alt="Vue logo" src="@/assets/logo.png"/>
-        <HelloWorld msg="Welcome to Your Vue.js App"/>
-        <el-button type="success" @click="getProject">Project</el-button>
+    <div class="column flex">
+        <el-row type="flex" justify="end" class="padding-bottom-20">
+            <el-button style="font-size: 14pt; padding: 10px 15px" type="primary" @click="createProject">
+                <el-icon name="circle-plus"></el-icon>
+                New Project
+            </el-button>
+        </el-row>
+        <el-row class="row flex" :gutter="20">
+            <el-col :span="8" class="flex">
+                <el-card shadow="never" :body-style="{'min-height': '360px'}">
+                    <div slot="header">
+                        <span>My Tasks</span>
+                    </div>
+                    <div>
+
+                    </div>
+                </el-card>
+            </el-col>
+            <el-col :span="8" class="flex">
+                <el-card shadow="never" :body-style="{'min-height': '360px'}">
+                    <div slot="header">
+                        <span>Notification</span>
+                    </div>
+                    <div>
+
+                    </div>
+                </el-card>
+            </el-col>
+            <el-col :span="8" class="flex">
+                <el-card shadow="never" :body-style="{'min-height': '360px'}">
+                    <div slot="header">
+                        <span>Project</span>
+                    </div>
+                    <div>
+
+                    </div>
+                </el-card>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-calendar v-model="currentDate">
+            </el-calendar>
+        </el-row>
+        <ProjectDialog ref="projectDialog" @projectSaved="loadProject"/>
     </div>
 </template>
 
 <script>
-    import HelloWorld from '@/components/HelloWorld.vue'
-    import AccountService from "@/views/account/account.service";
-
+    import ProjectDialog from "@/views/project/ProjectDialog";
     export default {
         name: "Home",
-        components: {
-            HelloWorld
+        components: {ProjectDialog},
+        data(){
+            return {
+                currentDate: new Date()
+            }
         },
         methods: {
-            getProject() {
-                AccountService.getProject(1).then(response => {
-                    console.log(response);
-                }, error => {
-                    console.log(error);
-                    AccountService.getCurrentAccount().then(response => {
-                        console.log(response);
-                    }, error => {
-                        console.log(error);
-                    });
-                });
+            createProject() {
+                this.$refs.projectDialog.show();
+            },
+            loadProject(){
 
             }
         }
@@ -34,21 +69,5 @@
 </script>
 
 <style scoped>
-    h3 {
-        margin: 40px 0 0;
-    }
 
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        display: inline-block;
-        margin: 0 10px;
-    }
-
-    a {
-        color: #42b983;
-    }
 </style>

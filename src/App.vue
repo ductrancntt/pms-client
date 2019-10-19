@@ -1,5 +1,5 @@
 <template>
-    <div id="vue-app" :style="{backgroundImage: 'url('+require('@/assets/images/bg.jpg')+')'}">
+    <div id="vue-app" class="bg-app">
         <router-view/>
     </div>
 </template>
