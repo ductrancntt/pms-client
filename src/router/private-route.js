@@ -1,6 +1,7 @@
 import ProjectManagement from "@/views/project/ProjectMangement";
-import Project from "@/views/project/Project";
+import Project from "@/views/project/ProjectLayout";
 import Home from "@/views/home/Home";
+import ProjectContent from "@/views/project/components/ProjectContent";
 
 const PrivateRoutes = [
     {
@@ -28,7 +29,19 @@ const PrivateRoutes = [
         meta: {
             title: "Project",
             authorities: ['ROLE_USER']
-        }
+        },
+        redirect: {name: 'projectContent'},
+        children: [
+            {
+                path: '/project/:id',
+                name: 'projectContent',
+                component: ProjectContent,
+                meta: {
+                    title: "Project",
+                    authorities: ['ROLE_USER']
+                },
+            }
+        ]
     }
 ];
 

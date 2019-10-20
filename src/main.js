@@ -8,7 +8,9 @@ import locale from 'element-ui/lib/locale';
 import i18n from '@/i18n';
 import router from "@/router";
 import '@/security';
+import VueDraggable from 'vue-draggable'
 
+Vue.use(VueDraggable)
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 locale.use(lang); // language for element ui

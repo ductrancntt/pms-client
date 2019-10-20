@@ -1,21 +1,22 @@
 <template>
-    <el-container direction="horizontal" v-loading.fullscreen.lock="isLoading">
+    <el-container direction="horizontal">
         <ProjectSidebar v-if="project != null" :project="project"/>
         <el-main class="row project-body">
             <router-view>
-                <!--Content goes here-->
+                <ProjectContent/>
             </router-view>
         </el-main>
     </el-container>
 </template>
 
 <script>
-    import ProjectSidebar from "@/views/project/ProjectSidebar";
+    import ProjectSidebar from "@/views/project/components/ProjectSidebar";
     import ProjectService from "@/views/project/project.service";
+    import ProjectContent from "@/views/project/components/ProjectContent";
 
     export default {
         name: "Project",
-        components: {ProjectSidebar},
+        components: {ProjectContent, ProjectSidebar},
         created() {
             this.getProject();
         },

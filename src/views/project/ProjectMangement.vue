@@ -35,13 +35,13 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/ProjectDialog";
+    import ProjectDialog from "@/views/project/components/ProjectDialog";
     import ProjectService from "@/views/project/project.service";
     import AlertService from "@/service/alert.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
     export default {
-        name: "Project",
+        name: "ProjectLayout",
         components: {ProjectDialog},
         data() {
             return {
@@ -53,8 +53,8 @@
             this.loadProject();
         },
         methods: {
-            goToProject(id){
-                this.$router.push({name:'project', params: {id: id}});
+            goToProject(id) {
+                this.$router.push({name: 'project', params: {id: id}});
             },
             createProject() {
                 this.$refs.projectDialog.show();
