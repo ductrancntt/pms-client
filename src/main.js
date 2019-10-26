@@ -9,11 +9,14 @@ import i18n from '@/i18n';
 import router from "@/router";
 import '@/security';
 import VueDraggable from 'vue-draggable'
+import utils from "@/utils";
 
 Vue.use(VueDraggable)
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 locale.use(lang); // language for element ui
+
+Vue.prototype.$utils = utils;
 
 new Vue({
     router,

@@ -1,7 +1,7 @@
 import request from "@/config/api/request";
 
-const baseUrl = "api/project";
-let ProjectService = {
+const baseUrl = "api/category";
+let CategoryService = {
     create(payload) {
         return request.post(
             baseUrl + "/create",
@@ -10,12 +10,7 @@ let ProjectService = {
     },
     getAll(payload) {
         return request.get(
-            baseUrl + "/all"
-        )
-    },
-    getTask(payload) {
-        return request.get(
-            baseUrl + "/get-task/" + payload,
+            baseUrl + "/list"
         )
     },
     get(payload) {
@@ -33,12 +28,7 @@ let ProjectService = {
         return request.delete(
             baseUrl + "/delete/" + payload
         )
-    },
-    checkProjectAdmin(payload){
-        return request.get(
-            baseUrl + "/check-project-admin/" + payload
-        )
     }
 };
 
-export default ProjectService;
+export default CategoryService;

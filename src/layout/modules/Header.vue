@@ -1,7 +1,7 @@
 <template>
     <el-header height="50px" class="row v-center custom-header">
         <div class="row flex">
-            <h1 @click="home">PMS</h1>
+            <h1 @click="home" style="cursor: pointer">PMS</h1>
         </div>
         <div class="row flex-2">
             <el-row class="row flex h-center">
@@ -15,7 +15,7 @@
         <div class="row flex v-center align-right">
             <div class="padding-right-40">
                 <el-dropdown trigger="click">
-                    <el-badge :value="100" :max="10" class="el-dropdown-link">
+                    <el-badge is-dot class="el-dropdown-link">
                         <el-button style="font-size: 16pt; padding: 8px" class="text-white" type="text"
                                    icon="el-icon-message-solid" circle></el-button>
                     </el-badge>

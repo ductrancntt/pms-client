@@ -1,10 +1,18 @@
 <template>
     <div id="kanban">
-        <el-row type="flex" justify="end" class="padding-10">
-            <el-button type="primary">Add Category</el-button>
-            <el-button type="primary">Add Task</el-button>
+        <el-row type="flex" justify="space-between" class="padding-10">
+            <div>
+                <el-button type="text" @click="$router.go(-1)">
+                    <el-icon name="arrow-left"></el-icon>
+                    Back
+                </el-button>
+            </div>
+            <div>
+                <CategoryDialog :project-id.sync="$route.params.id" @categorySaved="loadData"/>
+                <el-button type="primary">Add Task</el-button>
+            </div>
         </el-row>
-        <table class="table" v-drag-and-drop:options="options">
+        <table class="table">
             <thead>
             <th class="title-cell">
                 <i class="el-icon-circle-check"></i>
@@ -24,7 +32,8 @@
             </th>
             </thead>
             <tbody>
-            <tr class="table-row" v-for="category in project.categories" :key="category.id">
+            <tr class="table-row" v-for="category in project.categories" :key="category.info.id">
+                <!--NO_PROGRESS-->
                 <td class="table-cell">
                     <div class="category-title">
                         <transition name="el-fade-in-linear">
@@ -36,8 +45,8 @@
                                 <i class="el-icon-arrow-right"></i>
                             </el-tag>
                         </transition>
-                        <div style="padding: 0 10px; flex: 1">
-                            <el-tag style="width: 100%;">{{category.name}}</el-tag>
+                        <div class="padding-left-10 padding-right-10 flex">
+                            <el-tag class="width-100">{{category.info.name}}</el-tag>
                         </div>
                         <div>
                             <el-dropdown trigger="click">
@@ -45,7 +54,8 @@
                                     <i class="el-icon-more"></i>
                                 </el-tag>
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item><i class="el-icon-circle-plus-outline"></i>Add Task</el-dropdown-item>
+                                    <el-dropdown-item><i class="el-icon-circle-plus-outline"></i>Add Task
+                                    </el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-edit"></i>Edit</el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-collection-tag"></i>Archive</el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-delete"></i>Delete</el-dropdown-item>
@@ -56,53 +66,81 @@
                     </div>
 
                     <el-collapse-transition>
-                        <div v-show="category.show">
-                            <TaskItem v-for="task in category.noProgress" :key="task.id" :task="task"/>
-                            <div style="padding: 5px">
-                                <el-button type="primary" class="border-dashed width-100">
-                                    Add a task
-                                </el-button>
-                            </div>
+                        <div v-show="category.show" class="list-group">
+                            <draggable class="list-group"
+                                       :list="category.noProgress"
+                                       v-bind="dragOptions"
+                                       @change="log($event, category.noProgress, category.info.id, 'NO_PROGRESS')">
+                                <TaskItem class="list-group-item" v-for="task in category.noProgress" :key="task.id"
+                                          :task="task"/>
+                                <div class="padding-5" slot="footer">
+                                    <TaskDialog is-popover @taskSaved="loadData" :category-id="category.info.id"/>
+                                </div>
+                            </draggable>
                         </div>
                     </el-collapse-transition>
+
                 </td>
+
+                <!--IN_PROGRESS-->
                 <td class="table-cell">
                     <div class="category-title">
                         <span>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show">
-                            <TaskItem v-for="task in category.inProgress" :key="task.id" :task="task"/>
+                        <div v-show="category.show" class="list-group">
+                            <draggable class="list-group"
+                                       :list="category.inProgress"
+                                       v-bind="dragOptions"
+                                       @change="log($event, category.inProgress, category.info.id, 'IN_PROGRESS')">
+                                <TaskItem class="list-group-item" v-for="task in category.inProgress" :key="task.id"
+                                          :task="task"/>
+                            </draggable>
                         </div>
                     </el-collapse-transition>
                 </td>
+
+                <!--COMPLETED-->
                 <td class="table-cell">
                     <div class="category-title">
                         <span>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show">
-                            <TaskItem v-for="task in category.done" :key="task.id" :task="task"/>
+                        <div v-show="category.show" class="list-group">
+                            <draggable class="list-group"
+                                       :list="category.completed"
+                                       v-bind="dragOptions"
+                                       @change="log($event, category.completed, category.info.id, 'COMPLETED')">
+                                <TaskItem class="list-group-item" v-for="task in category.completed" :key="task.id"
+                                          :task="task"/>
+                            </draggable>
                         </div>
                     </el-collapse-transition>
                 </td>
-                <td class="table-cell">
+
+                <!--VERIFIED-->
+                <td class="table-cell" :class="isProjectAdmin?'':'bg-info'">
                     <div class="category-title">
                         <span>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show">
-                            <TaskItem v-for="task in category.confirmed" :key="task.id" :task="task"/>
+                        <div v-show="category.show" class="list-group">
+                            <draggable class="list-group"
+                                       :list="category.verified"
+                                       v-bind="dragOptions"
+                                       :disabled="!isProjectAdmin"
+                                       @change="log($event, category.verified, category.info.id, 'VERIFIED')">
+                                <TaskItem class="list-group-item" v-for="task in category.verified" :key="task.id"
+                                          :task="task"/>
+                            </draggable>
                         </div>
                     </el-collapse-transition>
                 </td>
             </tr>
             <tr>
-                <td colspan="4" class="text-center">
+                <td colspan="4" class="text-center padding-top-20">
                     <el-divider>
-                        <el-button type="primary" class="border-dashed">
-                            Add a Category
-                        </el-button>
+                        <CategoryDialog :project-id.sync="$route.params.id" @categorySaved="loadData"/>
                     </el-divider>
                 </td>
             </tr>
@@ -113,72 +151,130 @@
 
 <script>
     import TaskItem from "@/views/project/task/TaskItem";
+    import draggable from "vuedraggable";
+    import CategoryDialog from "@/views/project/category/CategoryDialog";
+    import ProjectService from "@/views/project/project.service";
+    import AlertService from "@/service/alert.service";
+    import TaskDialog from "@/views/project/task/TaskDialog";
+    import TaskService from "@/views/project/task/task.service";
 
     export default {
         name: "ProjectContent",
-        components: {TaskItem},
+        components: {TaskDialog, CategoryDialog, TaskItem, draggable},
+        computed: {
+            dragOptions() {
+                return {
+                    animation: 200,
+                    group: "task",
+                    disabled: false,
+                    ghostClass: "ghost",
+                };
+            }
+        },
         data() {
             return {
-                project: {
-                    id: 1,
-                    name: "Project 1",
+                isProjectAdmin: false,
+                project: {},
+                projectTemplate: {
+                    info: null,
                     categories: [
                         {
-                            id: 1,
-                            name: "September",
                             show: true,
-                            noProgress: [
-                                {id: 1, name: "Item 1", categoryId: 1},
-                                {id: 2, name: "Item 2", categoryId: 1},
-                            ],
-                            inProgress: [
-                                {id: 3, name: "Item 3", categoryId: 1},
-                            ],
-                            done: [
-                                {id: 4, name: "Item 4", categoryId: 1},
-                                {id: 5, name: "Item 5", categoryId: 1}
-                            ],
-                            confirmed: [
-                                {id: 6, name: "Item 6", categoryId: 1}
-                            ]
-                        },
-                        {
-                            id: 2,
-                            name: "October",
-                            show: true,
-                            noProgress: [
-                                {id: 7, name: "Item 7", categoryId: 2},
-                                {id: 8, name: "Item 8", categoryId: 2},
-                            ],
+                            info: null,
+                            noProgress: [],
                             inProgress: [],
-                            done: [
-                                {id: 9, name: "Item 9", categoryId: 2},
-                                {id: 10, name: "Item 10", categoryId: 2},
-                                {id: 11, name: "Item 11", categoryId: 2}
-                            ],
-                            confirmed: [
-                                {id: 12, name: "Item 12", categoryId: 2}
-                            ]
+                            completed: [],
+                            verified: [],
                         }
                     ]
                 },
-                options: {
-                    dropzoneSelector: ".drag-inner-list",
-                    draggableSelector: ".drag-item"
-                }
             }
         },
+        created() {
+            let vm = this;
+            ProjectService.checkProjectAdmin(this.$route.params.id).then(response => {
+                if (response == true) vm.isProjectAdmin = true;
+                if (response.data == false) vm.isProjectAdmin = false;
+            });
+            this.loadData();
+        },
         methods: {
+            loadData() {
+                let vm = this;
+                ProjectService.getTask(vm.$route.params.id).then(response => {
+                    console.log(response);
+                    vm.project = response;
+                }).catch(err => {
+                    AlertService.error("Error load project data");
+                });
+            },
+            updateTask(task) {
+                TaskService.update(task).then(response => {
+                    console.log(response);
+                });
+            },
             toggleCategory(category) {
-                console.log(category);
                 category.show = !category.show;
                 this.$set(category, 'show', category.show);
-            }
+            },
+            log(e, category, categoryId, status) {
+                let vm = this;
+                if (e.added) {
+                    const idx = e.added.newIndex;
+                    let newPos = this.getNewPos(idx, category);
+                    vm.$utils.setAttrs(vm, e.added.element, {categoryId: categoryId, status: status, pos: newPos});
+                    vm.updateTask(e.added.element);
+                } else if (e.removed) {
+                    // do nothing
+                } else {
+                    const idx = e.moved.newIndex;
+                    let newPos = this.getNewPos(idx, category);
+                    vm.$utils.setAttrs(vm, e.moved.element, {pos: newPos});
+                    vm.updateTask(e.moved.element);
+                }
+            },
+            getNewPos(idx, category) {
+                const increment = Math.pow(2, 16);
+                let before = category[idx - 1], after = category[idx + 1], current = category[idx];
+                let newPos = current.pos;
+
+                if (before && after) {
+                    /* Neu co the truoc va sau thi lay trung binh */
+                    newPos = Math.floor((category[idx - 1].pos + category[idx + 1].pos) / 2);
+                } else if (before) {
+                    console.log("Before");
+                    console.log(before);
+                    /* New co the truoc */
+                    if (before.pos >= current.pos) /* Neu the truoc lon hon the hien tai thi tang */
+                        newPos = category[idx - 1].pos + increment;
+                } else if (after) {
+                    if (after.pos <= current.pos)
+                        newPos = Math.floor(category[idx + 1].pos / 2);
+                }
+                return newPos;
+            },
         }
     }
 </script>
 
 <style scoped>
+    .list-group {
+        height: 100%;
+    }
+
+    .list-group-item {
+
+    }
+
+    .ghost {
+        font-size: 0;
+        opacity: 1;
+        background-color: transparent;
+        border: 2px dashed #026AA7;
+        border-radius: 5px;
+    }
+
+
     .border-dashed {
         border: 1px dashed #aebacc;
     }
@@ -188,7 +284,8 @@
     }
 
     .table-cell {
-        padding: 5px;
+        height: 1px;
+        padding: 10px 5px;
         border: none;
         border-left: 1px dashed #aebacc;
     }
