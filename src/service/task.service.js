@@ -1,7 +1,7 @@
 import request from "@/config/api/request";
 
-const baseUrl = "api/category";
-let CategoryService = {
+const baseUrl = "api/task";
+let TaskService = {
     create(payload) {
         return request.post(
             baseUrl + "/create",
@@ -28,7 +28,13 @@ let CategoryService = {
         return request.delete(
             baseUrl + "/delete/" + payload
         )
-    }
+    },
+    updateListPosition(payload) {
+        return request.put(
+            baseUrl + "/update-list-position",
+            JSON.stringify(payload)
+        )
+    },
 };
 
-export default CategoryService;
+export default TaskService;

@@ -1,7 +1,7 @@
 import request from "@/config/api/request";
 
-const baseUrl = "api/project";
-let ProjectService = {
+const baseUrl = "api/activity";
+let ActivityService = {
     create(payload) {
         return request.post(
             baseUrl + "/create",
@@ -10,12 +10,7 @@ let ProjectService = {
     },
     getAll(payload) {
         return request.get(
-            baseUrl + "/all"
-        )
-    },
-    getTask(payload) {
-        return request.get(
-            baseUrl + "/get-task/" + payload,
+            baseUrl + "/list"
         )
     },
     get(payload) {
@@ -34,11 +29,11 @@ let ProjectService = {
             baseUrl + "/delete/" + payload
         )
     },
-    checkProjectAdmin(payload){
+    getByTaskId(payload){
         return request.get(
-            baseUrl + "/check-project-admin/" + payload
+            baseUrl + '/task/' + payload
         )
     }
 };
 
-export default ProjectService;
+export default ActivityService;

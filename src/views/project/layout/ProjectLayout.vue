@@ -10,9 +10,9 @@
 </template>
 
 <script>
-    import ProjectSidebar from "@/views/project/components/ProjectSidebar";
-    import ProjectService from "@/views/project/project.service";
-    import ProjectContent from "@/views/project/components/ProjectContent";
+    import ProjectSidebar from "@/views/project/layout/ProjectSidebar";
+    import ProjectService from "@/service/project.service";
+    import ProjectContent from "@/views/project/layout/ProjectContent";
 
     export default {
         name: "Project",

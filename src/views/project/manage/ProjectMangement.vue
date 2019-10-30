@@ -35,8 +35,8 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/components/ProjectDialog";
-    import ProjectService from "@/views/project/project.service";
+    import ProjectDialog from "@/views/project/manage/ProjectDialog";
+    import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
@@ -74,7 +74,7 @@
                 let vm = this;
                 let payload = JSON.parse(JSON.stringify(project));
                 payload.closed = true;
-                SweetAlert.confirm("Close project", "Comfirm close " + payload.name + "!", function () {
+                SweetAlert.confirm("Close project", "Confirm close " + payload.name + "!", function () {
                     ProjectService.update(payload).then(response => {
                         vm.loadProject();
                         AlertService.success("Close project successfully")

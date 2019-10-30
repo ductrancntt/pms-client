@@ -53,7 +53,7 @@
 </template>
 
 <script>
-    import AccountService from "@/views/account/account.service";
+    import AccountService from "@/service/account.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
     export default {
@@ -74,7 +74,7 @@
                         {required: true, message: "Please enter last name", trigger: "blur"}
                     ],
                     email: [
-                        {required: true, message: "Please enter email", trigger: "blur"}
+                        {required: true, message: "Please enter email", trigger: "blur", regex: '[^@]+@[^\\.]+\\..+'}
                     ]
                 },
                 languages: [
@@ -100,11 +100,16 @@
                 }
             }
         },
+        computed: {
+            isEmailValid(){
+                return /[^@]+@[^\.]+\..+/.test(this.formData.email);
+            }
+        },
         methods: {
             register() {
                 let vm = this;
                 vm.$refs["registerForm"].validate(async valid => {
-                    if (valid) {
+                    if (valid && vm.isEmailValid) {
                         AccountService.register(this.formData).then(response => {
                             SweetAlert.success("Success", "Account has been created, check email for activation!", "Go to login")
                                 .then(function (result) {

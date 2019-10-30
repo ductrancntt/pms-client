@@ -44,21 +44,27 @@
 </template>
 
 <script>
-    import Validation from '@/views/public/login/form-validation';
-    import AccountService from "@/views/account/account.service";
+    import AccountService from "@/service/account.service";
     import AlertService from "@/service/alert.service";
-    import AuthService from "@/security/auth.service";
+    import AuthService from "@/service/auth.service";
 
     export default {
         name: "Login",
-        mixins: [Validation],
         data() {
             return {
                 formData: {
                     username: "",
                     password: "",
                 },
-                isLogging: false
+                isLogging: false,
+                rules: {
+                    username: [
+                        { required: true, message: "Please enter username", trigger: "blur" }
+                    ],
+                    password: [
+                        { required: true, message: "Please enter password", trigger: "blur" }
+                    ]
+                }
             }
         },
         methods: {

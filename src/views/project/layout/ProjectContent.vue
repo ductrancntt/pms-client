@@ -8,8 +8,7 @@
                 </el-button>
             </div>
             <div>
-                <CategoryDialog :project-id.sync="$route.params.id" @categorySaved="loadData"/>
-                <el-button type="primary">Add Task</el-button>
+                <CategoryDialog :project-id.sync="projectId" @categorySaved="loadData"/>
             </div>
         </el-row>
         <table class="table">
@@ -57,8 +56,10 @@
                                     <el-dropdown-item><i class="el-icon-circle-plus-outline"></i>Add Task
                                     </el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-edit"></i>Edit</el-dropdown-item>
-                                    <el-dropdown-item><i class="el-icon-collection-tag"></i>Archive</el-dropdown-item>
-                                    <el-dropdown-item><i class="el-icon-delete"></i>Delete</el-dropdown-item>
+                                    <el-dropdown-item @click.native="archiveCategory(category.info.id)"><i class="el-icon-collection-tag"></i>Archive</el-dropdown-item>
+                                    <el-dropdown-item @click.native="deleteCategory(category.info.id)"><i
+                                            class="el-icon-delete"></i>Delete
+                                    </el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-s-order"></i>Reorder</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
@@ -140,7 +141,7 @@
             <tr>
                 <td colspan="4" class="text-center padding-top-20">
                     <el-divider>
-                        <CategoryDialog :project-id.sync="$route.params.id" @categorySaved="loadData"/>
+                        <CategoryDialog :project-id.sync="projectId" @categorySaved="loadData"/>
                     </el-divider>
                 </td>
             </tr>
@@ -150,13 +151,15 @@
 </template>
 
 <script>
-    import TaskItem from "@/views/project/task/TaskItem";
+    import TaskItem from "@/views/task/TaskItem";
     import draggable from "vuedraggable";
-    import CategoryDialog from "@/views/project/category/CategoryDialog";
-    import ProjectService from "@/views/project/project.service";
+    import CategoryDialog from "@/views/category/CategoryDialog";
+    import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
-    import TaskDialog from "@/views/project/task/TaskDialog";
-    import TaskService from "@/views/project/task/task.service";
+    import TaskDialog from "@/views/task/TaskDialog";
+    import TaskService from "@/service/task.service";
+    import CategoryService from "@/service/category.service";
+    import SweetAlert from "@/service/sweet-alert.service";
 
     export default {
         name: "ProjectContent",
@@ -174,6 +177,7 @@
         data() {
             return {
                 isProjectAdmin: false,
+                projectId: null,
                 project: {},
                 projectTemplate: {
                     info: null,
@@ -192,6 +196,7 @@
         },
         created() {
             let vm = this;
+            vm.projectId = parseInt(vm.$route.params.id);
             ProjectService.checkProjectAdmin(this.$route.params.id).then(response => {
                 if (response == true) vm.isProjectAdmin = true;
                 if (response.data == false) vm.isProjectAdmin = false;
@@ -199,6 +204,34 @@
             this.loadData();
         },
         methods: {
+            deleteCategory(id) {
+                let vm = this;
+                AlertService.confirm("Confirm delete category?", function () {
+                    CategoryService.delete(id)
+                        .then(() => {
+                            AlertService.success("Delete category successfully!");
+                            vm.loadData();
+                        })
+                        .catch(() => {
+                            AlertService.error("Delete category failed");
+                            vm.loadData();
+                        });
+                });
+            },
+            archiveCategory(id) {
+                let vm = this;
+                AlertService.confirm("Confirm archive category?", function () {
+                    CategoryService.archive(id)
+                        .then(() => {
+                            AlertService.success("Category archived successfully!");
+                            vm.loadData();
+                        })
+                        .catch(() => {
+                            AlertService.error("Category archived failed");
+                            vm.loadData();
+                        });
+                });
+            },
             loadData() {
                 let vm = this;
                 ProjectService.getTask(vm.$route.params.id).then(response => {
@@ -207,10 +240,23 @@
                 }).catch(err => {
                     AlertService.error("Error load project data");
                 });
+                // ProjectService.getTaskArchived(vm.$route.params.id).then(response => {
+                //     console.log(response);
+                //     vm.project = response;
+                // }).catch(err => {
+                //     AlertService.error("Error load project data");
+                // });
             },
             updateTask(task) {
                 TaskService.update(task).then(response => {
                     console.log(response);
+                });
+            },
+            updateListTask(tasks){
+                let vm = this;
+                TaskService.updateListPosition(tasks).then(response => {
+                    console.log(response);
+                    vm.loadData();
                 });
             },
             toggleCategory(category) {
@@ -221,37 +267,46 @@
                 let vm = this;
                 if (e.added) {
                     const idx = e.added.newIndex;
-                    let newPos = this.getNewPos(idx, category);
+                    let update = this.getNewPos(idx, category);
+                    let newPos = update.newPos;
                     vm.$utils.setAttrs(vm, e.added.element, {categoryId: categoryId, status: status, pos: newPos});
                     vm.updateTask(e.added.element);
+                    if (update.updateList) vm.updateListTask(category);
                 } else if (e.removed) {
                     // do nothing
                 } else {
                     const idx = e.moved.newIndex;
-                    let newPos = this.getNewPos(idx, category);
+                    let update = this.getNewPos(idx, category);
+                    let newPos = update.newPos;
                     vm.$utils.setAttrs(vm, e.moved.element, {pos: newPos});
                     vm.updateTask(e.moved.element);
+                    if (update.updateList) vm.updateListTask(category);
                 }
             },
             getNewPos(idx, category) {
                 const increment = Math.pow(2, 16);
                 let before = category[idx - 1], after = category[idx + 1], current = category[idx];
                 let newPos = current.pos;
+                let updateList = false;
 
                 if (before && after) {
                     /* Neu co the truoc va sau thi lay trung binh */
-                    newPos = Math.floor((category[idx - 1].pos + category[idx + 1].pos) / 2);
+                    newPos = Math.floor((before.pos + after.pos) / 2);
+                    if (newPos === before.pos || newPos === after.pos) updateList = true;
                 } else if (before) {
-                    console.log("Before");
-                    console.log(before);
                     /* New co the truoc */
                     if (before.pos >= current.pos) /* Neu the truoc lon hon the hien tai thi tang */
-                        newPos = category[idx - 1].pos + increment;
+                        newPos = before.pos + increment;
                 } else if (after) {
-                    if (after.pos <= current.pos)
-                        newPos = Math.floor(category[idx + 1].pos / 2);
+                    if (after.pos <= current.pos) {
+                        newPos = Math.floor(after.pos / 2);
+                        if (newPos === after.pos) updateList = true;
+                    }
                 }
-                return newPos;
+                return {
+                    newPos: newPos,
+                    updateList: updateList
+                }
             },
         }
     }
@@ -273,7 +328,6 @@
         border: 2px dashed #026AA7;
         border-radius: 5px;
     }
-
 
     .border-dashed {
         border: 1px dashed #aebacc;
@@ -323,7 +377,7 @@
         font-size: 16px;
         font-weight: 700;
         text-transform: uppercase;
-        padding: 5px;
+        padding: 0 5px 5px 5px;
         height: 30px;
     }
 

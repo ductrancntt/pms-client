@@ -28,7 +28,7 @@
 
 <script>
 
-    import AccountService from "@/views/account/account.service";
+    import AccountService from "@/service/account.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
     export default {

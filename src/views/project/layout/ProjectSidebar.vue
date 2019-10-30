@@ -1,12 +1,12 @@
 <template>
     <el-aside width="200px" class="fixed-sidebar">
         <el-menu>
-            <el-menu-item index="1-1">Overview</el-menu-item>
-            <el-menu-item index="1-1">Category</el-menu-item>
-            <el-menu-item index="1-1">Task</el-menu-item>
-            <el-menu-item index="1-1">Resources</el-menu-item>
-            <el-menu-item index="1-1">Schedule</el-menu-item>
-            <el-menu-item index="1-1">Report</el-menu-item>
+            <el-menu-item index="1">Overview</el-menu-item>
+            <el-menu-item index="2">Category</el-menu-item>
+            <el-menu-item index="3">Task</el-menu-item>
+            <el-menu-item index="4">Resources</el-menu-item>
+            <el-menu-item index="5">Schedule</el-menu-item>
+            <el-menu-item index="6">Report</el-menu-item>
         </el-menu>
     </el-aside>
 </template>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import constants from "@/constants";
-import AuthService from "@/security/auth.service";
+import AuthService from "@/service/auth.service";
 
 const baseUrl = constants.SERVER_API_URL;
 const timeout = 100000;

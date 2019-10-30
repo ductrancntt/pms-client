@@ -22,7 +22,12 @@ let AccountService = {
     updateCurrentAccount(payload){
         return request.put(
             baseUrl + "/update",
-            JSON.stringify(payload)
+            payload,
+            {
+                headers: {
+                    'Content-Type': undefined
+                }
+            }
         )
     },
     changePassword(payload){

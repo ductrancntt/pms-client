@@ -12,6 +12,9 @@
                 <el-form-item prop="name" label="Name">
                     <el-input ref="txt" v-model="categoryForm.name"></el-input>
                 </el-form-item>
+                <el-form-item style="display: none">
+                    <el-input></el-input>
+                </el-form-item>
                 <el-form-item class="margin-bottom-0">
                     <div class="row">
                         <div class="text-left flex">
@@ -25,19 +28,19 @@
                 </el-form-item>
             </el-form>
         </div>
-        <el-button type="primary" style="height: 100%" slot="reference">Add Category</el-button>
+        <el-button type="primary" style="height: 100%" slot="reference">Quick Add Category</el-button>
     </el-popover>
 </template>
 
 <script>
     import AlertService from "@/service/alert.service";
-    import CategoryService from "@/views/project/category/category.service";
+    import CategoryService from "@/service/category.service";
 
     export default {
         name: "CategoryDialog",
         props: {
             projectId: {
-                type: String,
+                type: Number,
                 required: true,
             }
         },
@@ -69,17 +72,14 @@
             hide() {
                 let vm = this;
                 vm.visible = false;
-                setTimeout(function () {
-                    vm.$refs.form.resetFields();
-                }, 1)
+                vm.$refs.form.resetFields();
             },
             edit(entity) {
                 this.categoryForm = Object.assign(this.categoryForm, entity);
             },
             submit() {
                 let vm = this;
-                vm.$refs.categoryForm.validate(async valid => {
-                    console.log(valid);
+                vm.$refs.form.validate(async valid => {
                     if (valid) {
                         vm.isSaving = true;
                         vm.categoryForm.projectId = parseInt(this.projectId);
@@ -98,6 +98,7 @@
                     vm.hide();
                     vm.isSaving = false;
                     vm.$emit("categorySaved");
+                    vm.hide();
                 }
 
                 function onError(error) {
@@ -105,6 +106,7 @@
                     console.log(error);
                     vm.hide();
                     vm.isSaving = false;
+                    vm.hide();
                 }
             }
         }

@@ -26,17 +26,14 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <el-avatar :size="30" :src="'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'"
-                       @error="errorHandler">
-                <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
-            </el-avatar>
+            <UserAvatar :image-url="user.imageUrl" shape="circle" />
             <el-dropdown trigger="click" class="padding-left-10">
                 <el-button class="el-dropdown-link text-white" type="text">
                     <span>{{user.firstName}}&nbsp;</span>
                     <i class="el-icon-arrow-down"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>Profile</el-dropdown-item>
+                    <el-dropdown-item @click.native="profile">Profile</el-dropdown-item>
                     <el-dropdown-item @click.native="logout">
                         <a>Logout</a>
                     </el-dropdown-item>
@@ -48,10 +45,13 @@
 </template>
 
 <script>
-    import Auth from "@/security/auth.service";
+    import Auth from "@/service/auth.service";
+    import {bus} from "@/main";
+    import UserAvatar from "@/components/UserAvatar";
 
     export default {
         name: "Header",
+        components: {UserAvatar},
         data() {
             return {
                 user: Auth.getCurrentUser() ? Auth.getCurrentUser() : {},
@@ -107,13 +107,19 @@
                 ]
             }
         },
+        created() {
+            let vm = this;
+            bus.$on("updateAccount", function () {
+                vm.user = Auth.getCurrentUser();
+            })
+        },
         methods: {
-            errorHandler() {
-                return this.user.imageUrl == null;
-            },
             logout() {
                 Auth.logout();
                 this.$router.push({name: 'loginPage'});
+            },
+            profile() {
+                this.$router.push({name: 'profile'});
             },
             home() {
                 this.$router.push({name: 'home'});

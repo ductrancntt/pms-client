@@ -10,13 +10,20 @@ import router from "@/router";
 import '@/security';
 import VueDraggable from 'vue-draggable'
 import utils from "@/utils";
+import VueMoment from 'vue-moment';
+import CKEditor from '@ckeditor/ckeditor5-vue';
+import '@/components/GlobalComponentRegister';
 
+Vue.use( CKEditor );
 Vue.use(VueDraggable)
 Vue.use(ElementUI);
+Vue.use(VueMoment);
 Vue.config.productionTip = false;
 locale.use(lang); // language for element ui
 
 Vue.prototype.$utils = utils;
+
+export const bus = new Vue();
 
 new Vue({
     router,

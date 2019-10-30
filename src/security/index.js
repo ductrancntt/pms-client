@@ -1,5 +1,5 @@
 import router from "@/router";
-import AuthService from "@/security/auth.service";
+import AuthService from "@/service/auth.service";
 
 router.beforeEach((to, from, next) => {
     if (!to.matched.length) {

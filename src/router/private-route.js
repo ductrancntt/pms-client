@@ -1,7 +1,8 @@
-import ProjectManagement from "@/views/project/ProjectMangement";
-import Project from "@/views/project/ProjectLayout";
+import ProjectManagement from "@/views/project/manage/ProjectMangement";
+import Project from "@/views/project/layout/ProjectLayout";
 import Home from "@/views/home/Home";
-import ProjectContent from "@/views/project/components/ProjectContent";
+import ProjectContent from "@/views/project/layout/ProjectContent";
+import Profile from "@/views/account/profile/Profile";
 
 const PrivateRoutes = [
     {
@@ -19,6 +20,15 @@ const PrivateRoutes = [
         component: ProjectManagement,
         meta: {
             title: "Project Management",
+            authorities: ['ROLE_ADMIN']
+        },
+    },
+    {
+        path: '/profile',
+        name: 'profile',
+        component: Profile,
+        meta: {
+            title: "Profile",
             authorities: ['ROLE_USER']
         },
     },

@@ -17,6 +17,14 @@
         padding: 0;
     }
 
+    body {
+        color: #172b4d;
+        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+    }
+
     #vue-app {
         display: flex;
     }

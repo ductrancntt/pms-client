@@ -18,7 +18,7 @@
 </template>
 
 <script>
-    import ProjectService from "@/views/project/project.service";
+    import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
 
     export default {

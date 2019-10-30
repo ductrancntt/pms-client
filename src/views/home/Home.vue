@@ -53,10 +53,10 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/components/ProjectDialog";
+    import ProjectDialog from "@/views/project/manage/ProjectDialog";
     import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
-    import ProjectService from "@/views/project/project.service";
+    import ProjectService from "@/service/project.service";
 
     export default {
         name: "Home",

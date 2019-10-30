@@ -1,6 +1,6 @@
 import Login from "@/views/public/login/Login"
 import Register from "@/views/public/register/Register"
-import Activate from "@/views/account/activate/Activate";
+import Activate from "@/views/public/activate/Activate";
 import Error from "@/views/public/error/Error";
 import ResetInit from "@/views/public/reset/ResetInit";
 import ResetFinish from "@/views/public/reset/ResetFinish";

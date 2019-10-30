@@ -14,7 +14,7 @@
                         </el-form-item>
 
                         <el-form-item>
-                            <el-button :disabled="form.email == '' || form.email == null || isSaving" style="width: 100%" type="primary" @click="reset">Reset Password
+                            <el-button :disabled="!isEmailValid || isSaving" style="width: 100%" type="primary" @click="reset">Reset Password
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import AccountService from "@/views/account/account.service";
+    import AccountService from "@/service/account.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
     export default {
@@ -33,7 +33,7 @@
         data() {
             return {
                 form: {
-                    email: null
+                    email: ''
                 },
                 isSaving: false,
                 rules: {
@@ -41,6 +41,11 @@
                         {required: true, message: "Please enter email", trigger: "blur"}
                     ]
                 }
+            }
+        },
+        computed:{
+            isEmailValid(){
+                return /[^@]+@[^\.]+\..+/.test(this.form.email);
             }
         },
         methods: {

@@ -1,4 +1,4 @@
-import {Notification} from 'element-ui';
+import {MessageBox, Notification} from 'element-ui';
 
 let defaultDuration = 3000;
 let AlertService = {
@@ -36,6 +36,17 @@ let AlertService = {
             title: "Info",
             message: message,
             duration: duration ? duration : defaultDuration,
+        });
+    },
+    confirm(message, callback) {
+        MessageBox.confirm(message, 'Confirm', {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+        }).then(() => {
+            if (callback) callback();
+        }).catch(() => {
+
         });
     }
 };

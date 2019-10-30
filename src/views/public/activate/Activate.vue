@@ -31,7 +31,7 @@
 </template>
 
 <script>
-    import AccountService from "@/views/account/account.service";
+    import AccountService from "@/service/account.service";
 
     export default {
         name: "Activate",
