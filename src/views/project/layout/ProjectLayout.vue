@@ -2,9 +2,10 @@
     <el-container direction="horizontal">
         <ProjectSidebar v-if="project != null" :project="project"/>
         <el-main class="row project-body">
-            <router-view>
-                <ProjectContent/>
-            </router-view>
+            <transition name="fade" mode="out-in">
+                <router-view>
+                </router-view>
+            </transition>
         </el-main>
     </el-container>
 </template>
@@ -12,11 +13,10 @@
 <script>
     import ProjectSidebar from "@/views/project/layout/ProjectSidebar";
     import ProjectService from "@/service/project.service";
-    import ProjectContent from "@/views/project/layout/ProjectContent";
 
     export default {
         name: "Project",
-        components: {ProjectContent, ProjectSidebar},
+        components: {ProjectSidebar},
         created() {
             this.getProject();
         },

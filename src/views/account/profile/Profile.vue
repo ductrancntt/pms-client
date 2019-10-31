@@ -7,7 +7,7 @@
                     <div class="flex">
                         <div class="text-center">
                             <div class="text-center">
-                                <SingleImageUploader v-if="user.imageUrl" :imageUrl="user.imageUrl" ref="avatar"/>
+                                <SingleImageUploader :imageUrl="user.imageUrl ? user.imageUrl : ''" ref="avatar"/>
                             </div>
                         </div>
                         <div class="text-center padding-top-15">

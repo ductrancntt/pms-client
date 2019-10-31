@@ -4,7 +4,7 @@
         </el-avatar>
         <el-avatar :shape="shape" v-else :size="size" :style="{fontSize: (size*0.4) + 'px'}">
             <span>
-                {{text}}
+                {{text[0]}}
             </span>
         </el-avatar>
     </div>

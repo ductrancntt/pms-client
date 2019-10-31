@@ -26,7 +26,7 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <UserAvatar :image-url="user.imageUrl" shape="circle" />
+            <UserAvatar :image-url="user.imageUrl" :text="user.firstName" shape="circle" />
             <el-dropdown trigger="click" class="padding-left-10">
                 <el-button class="el-dropdown-link text-white" type="text">
                     <span>{{user.firstName}}&nbsp;</span>
