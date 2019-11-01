@@ -27,7 +27,7 @@
             shape: {
                 type: String,
                 default: 'square'
-            }
+            },
         },
         created() {
             console.log(this.imageUrl);

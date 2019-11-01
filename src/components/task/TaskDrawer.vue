@@ -5,7 +5,7 @@
             :visible.sync="visible"
             direction="rtl"
             :before-close="hide"
-            size="45%">
+            size="50%">
         <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
             <div class="text-right padding-bottom-20" v-if="isManager">
                 <el-button size="mini" type="primary" v-if="editMode" @click="submit">
@@ -22,7 +22,6 @@
                 </el-button>
             </div>
             <div v-if="!editMode" class="column">
-
                 <div id="content" class="row">
                     <table class="table">
                         <tr>
@@ -53,28 +52,19 @@
                     </table>
                 </div>
                 <div>
-                    <el-divider>Description</el-divider>
+                    <el-divider content-position="left">Description</el-divider>
                     <p v-html="task.description? task.description : '<i>No description</i>'"></p>
                 </div>
                 <div id="attachment" v-if="task.attachments && task.attachments.length > 0">
-                    <el-divider>Attachment</el-divider>
+                    <el-divider content-position="left">Attachment</el-divider>
                 </div>
 
                 <div id="comment-thread">
-                    <el-divider>Comment</el-divider>
-                    <div id="comment-body" class="column">
-                        <el-input type="textarea" v-model="commentText" placeholder="Type your comment here" rows="2"></el-input>
-                        <div class="padding-top-10">
-                            <el-button>Add Comment</el-button>
-                            <el-button>Add Attachment</el-button>
-                        </div>
-                    </div>
-                    <div id="comment-logs">
-
-                    </div>
+                    <el-divider content-position="left">Comment</el-divider>
+                    <Comment :task-id="task.id" />
                 </div>
                 <div id="activity">
-                    <el-divider>Activities</el-divider>
+                    <el-divider content-position="left">Activities</el-divider>
                     <ul>
                         <li class="padding-bottom-5" style="list-style-type: none" v-for="activity in activities">
                             <el-card shadow="never">
@@ -133,6 +123,12 @@
                             </el-form-item>
                         </el-col>
                     </el-form-item>
+                    <el-form-item label="Assign To">
+                        <el-select multiple
+                        placeholder="Select users">
+
+                        </el-select>
+                    </el-form-item>
                 </el-form>
             </div>
         </div>
@@ -144,10 +140,13 @@
     import TaskService from "@/service/task.service";
     import UserAvatar from "@/components/UserAvatar";
     import ActivityService from "@/service/activity.service";
+    import Comment from "@/components/comment/Comment";
+    import AccountService from "@/service/account.service";
+    import ProjectService from "@/service/project.service";
 
     export default {
         name: "TaskDrawer",
-        components: {UserAvatar},
+        components: {Comment, UserAvatar},
         props: {
             isManager:{
                 type: Boolean,
@@ -194,6 +193,9 @@
             }
         },
         methods: {
+
+            loadProjectUser(){
+            },
             toggleEditMode() {
                 this.editMode = !this.editMode;
             },
@@ -210,9 +212,10 @@
                     vm.activities = res;
                 });
             },
-            hide() {
+            hide(done) {
                 this.visible = false;
                 this.editMode = false;
+                done();
             },
             submit() {
                 let vm = this;
