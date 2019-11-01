@@ -36,18 +36,22 @@
                 </div>
             </div>
         </el-card>
-        <TaskDrawer ref="drawer"/>
+        <TaskDrawer :is-manager="isManager" ref="drawer"/>
     </div>
 </template>
 
 <script>
-    import TaskDrawer from "@/views/task/TaskDrawer";
+    import TaskDrawer from "@/components/task/TaskDrawer";
     import UserAvatar from "@/components/UserAvatar";
 
     export default {
         name: "TaskItem",
         components: {UserAvatar, TaskDrawer},
         props: {
+            isManager:{
+                type: Boolean,
+                required: true
+            },
             task: {
                 type: Object,
                 required: true

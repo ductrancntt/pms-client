@@ -1,10 +1,10 @@
 <template>
-
+    <p>Sub Task</p>
 </template>
 
 <script>
     export default {
-        name: "CategoryManagement"
+        name: "SubTask"
     }
 </script>
 

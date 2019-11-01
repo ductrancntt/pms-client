@@ -1,9 +1,15 @@
 <template>
-    <el-container direction="horizontal">
-        <ProjectSidebar v-if="project != null" :project="project"/>
-        <el-main class="row project-body">
+    <el-container direction="horizontal" v-loading="isLoading">
+        <ProjectSidebar v-if="isManager != null"
+                        :project-id="projectId"
+                        :is-manager="isManager"
+                        @toggleSidebar="toggleSidebar"/>
+        <el-main class="row"
+                 :class="collapse ? 'project-body-short' : 'project-body-long'"
+                 v-if="isManager != null">
             <transition name="fade" mode="out-in">
-                <router-view>
+                <router-view :project-id="projectId"
+                             :is-manager="isManager">
                 </router-view>
             </transition>
         </el-main>
@@ -15,25 +21,31 @@
     import ProjectService from "@/service/project.service";
 
     export default {
-        name: "Project",
+        name: "ProjectLayout",
         components: {ProjectSidebar},
         created() {
             this.getProject();
         },
         data() {
             return {
+                collapse: false,
                 isLoading: true,
-                project: null,
+                isManager: null,
+                projectId: null,
             }
         },
         methods: {
+            toggleSidebar(status) {
+                this.collapse = status;
+            },
             getProject() {
                 let vm = this;
-                ProjectService.get(this.$route.params.id).then(data => {
-                        vm.project = data;
-                        vm.isLoading = false;
-                    }
-                );
+                vm.projectId = parseInt(vm.$route.params.id);
+                ProjectService.checkProjectAdmin(vm.projectId).then(response => {
+                    vm.isLoading = false;
+                    if (response === true) vm.isManager = true;
+                    if (response.data === false) vm.isManager = false;
+                });
             }
         }
 
@@ -41,8 +53,13 @@
 </script>
 
 <style scoped>
-    .project-body {
+    .project-body-long {
         margin-left: 200px;
+        padding: 0;
+    }
+
+    .project-body-short {
+        margin-left: 64px;
         padding: 0;
     }
 </style>

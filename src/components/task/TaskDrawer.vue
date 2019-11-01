@@ -7,7 +7,7 @@
             :before-close="hide"
             size="45%">
         <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
-            <div class="text-right padding-bottom-20">
+            <div class="text-right padding-bottom-20" v-if="isManager">
                 <el-button size="mini" type="primary" v-if="editMode" @click="submit">
                     <el-icon name="circle-check"/>
                     Save
@@ -148,6 +148,12 @@
     export default {
         name: "TaskDrawer",
         components: {UserAvatar},
+        props: {
+            isManager:{
+                type: Boolean,
+                required: true
+            },
+        },
         data() {
             return {
                 editor: ClassicEditor,

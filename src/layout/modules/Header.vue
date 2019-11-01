@@ -1,7 +1,8 @@
 <template>
     <el-header height="50px" class="row v-center custom-header">
-        <div class="row flex">
-            <h1 @click="home" style="cursor: pointer">PMS</h1>
+        <div class="row flex v-center">
+            <img @click="navigateTo('home')" style="cursor: pointer; width: 36px; height: 36px;" src="../../assets/images/logo.png"/>
+            <h1 @click="navigateTo('home')" class="header-title">&nbsp;PMS</h1>
         </div>
         <div class="row flex-2">
             <el-row class="row flex h-center">
@@ -26,17 +27,17 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <UserAvatar :image-url="user.imageUrl" :text="user.firstName" shape="circle" />
+            <UserAvatar :image-url="user.imageUrl" :text="user.firstName" shape="circle"/>
             <el-dropdown trigger="click" class="padding-left-10">
                 <el-button class="el-dropdown-link text-white" type="text">
-                    <span>{{user.firstName}}&nbsp;</span>
+                    <span>{{user.firstName}} {{user.lastName}}</span>
                     <i class="el-icon-arrow-down"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="profile">Profile</el-dropdown-item>
-                    <el-dropdown-item @click.native="logout">
-                        <a>Logout</a>
-                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('userProject')">My Project</el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('profile')">My Profile</el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('changePassword')">Change Password</el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('loginPage')">Logout</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
 
@@ -114,21 +115,22 @@
             })
         },
         methods: {
-            logout() {
-                Auth.logout();
-                this.$router.push({name: 'loginPage'});
-            },
-            profile() {
-                this.$router.push({name: 'profile'});
-            },
-            home() {
-                this.$router.push({name: 'home'});
+            navigateTo(routeName) {
+                if (routeName === 'loginPage') Auth.logout();
+                this.$router.push({name: routeName});
             }
         }
     }
 </script>
 
 <style scoped>
+    .header-title {
+        letter-spacing: 2px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 18pt
+    }
+
     .custom-header {
         color: white !important;
         background-color: #026aa7 !important;

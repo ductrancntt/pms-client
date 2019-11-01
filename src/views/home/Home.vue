@@ -53,7 +53,7 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/manage/ProjectDialog";
+    import ProjectDialog from "@/views/project/components/ProjectDialog";
     import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
     import ProjectService from "@/service/project.service";

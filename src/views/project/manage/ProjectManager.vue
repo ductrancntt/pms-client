@@ -35,13 +35,13 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/manage/ProjectDialog";
+    import ProjectDialog from "@/views/project/components/ProjectDialog";
     import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
     import SweetAlert from "@/service/sweet-alert.service";
 
     export default {
-        name: "ProjectLayout",
+        name: "ProjectManager",
         components: {ProjectDialog},
         data() {
             return {

@@ -1,6 +1,6 @@
 <template>
     <div :style="{width: size + 'px', height: size+'px'}" style="cursor: pointer">
-        <el-avatar :shape="shape" v-if="imageUrl != null && imageUrl != ''" :size="size" :src="imageUrl">
+        <el-avatar :shape="shape" v-if="imageUrl != null && imageUrl !== ''" :size="size" :src="imageUrl">
         </el-avatar>
         <el-avatar :shape="shape" v-else :size="size" :style="{fontSize: (size*0.4) + 'px'}">
             <span>

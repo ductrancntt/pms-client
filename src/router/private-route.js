@@ -1,8 +1,9 @@
-import ProjectManagement from "@/views/project/manage/ProjectMangement";
 import Project from "@/views/project/layout/ProjectLayout";
 import Home from "@/views/home/Home";
-import Profile from "@/views/account/profile/Profile";
+import Profile from "@/views/account/Profile";
 import ProjectRoutes from "@/router/project-route";
+import UserProject from "@/views/account/UserProject";
+import ChangePassword from "@/views/account/ChangePassword";
 
 const PrivateRoutes = [
     {
@@ -24,12 +25,21 @@ const PrivateRoutes = [
         },
     },
     {
-        path: '/project-management',
-        name: 'projectManagement',
-        component: ProjectManagement,
+        path: '/change-password',
+        name: 'changePassword',
+        component: ChangePassword,
         meta: {
-            title: "Project Management",
-            authorities: ['ROLE_ADMIN']
+            title: "Change Password",
+            authorities: ['ROLE_USER']
+        },
+    },
+    {
+        path: '/user-project',
+        name: 'userProject',
+        component: UserProject,
+        meta: {
+            title: "User Project",
+            authorities: ['ROLE_USER']
         },
     },
     {
@@ -40,7 +50,7 @@ const PrivateRoutes = [
             title: "Project",
             authorities: ['ROLE_USER']
         },
-        redirect: {name: 'projectContent'},
+        redirect: {name: 'projectTask'},
         children: [
             ...ProjectRoutes
         ]

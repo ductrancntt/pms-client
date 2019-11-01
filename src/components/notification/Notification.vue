@@ -1,10 +1,10 @@
 <template>
-    <p>ProjectMember</p>
+    <p>Notification</p>
 </template>
 
 <script>
     export default {
-        name: "ProjectMember"
+        name: "Notification"
     }
 </script>
 
