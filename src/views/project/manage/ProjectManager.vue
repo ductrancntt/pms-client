@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/components/ProjectDialog";
+    import ProjectDialog from "@/components/project/ProjectDialog";
     import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
     import SweetAlert from "@/service/sweet-alert.service";
@@ -78,7 +78,7 @@
                     ProjectService.update(payload).then(response => {
                         vm.loadProject();
                         AlertService.success("Close project successfully")
-                    }).catch(error => AlertService.error("Close project failed"));
+                    }).catch(error => AlertService.error(error.message));
                 });
 
             },
@@ -88,7 +88,7 @@
                     ProjectService.delete(project.id).then(response => {
                         vm.loadProject();
                         AlertService.success("Delete successfully")
-                    }).catch(error => AlertService.error("Delete failed"));
+                    }).catch(error => AlertService.error(error.message));
                 });
             }
         }

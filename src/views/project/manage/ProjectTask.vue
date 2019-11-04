@@ -1,5 +1,5 @@
 <template>
-    <div id="kanban" v-loading="isLoading">
+    <div id="kanban" v-loading="isLoading" style="overflow-y: hidden">
         <el-row type="flex" justify="space-between" class="padding-10">
             <div>
                 <el-button type="text" @click="$router.push({name: 'home'})">
@@ -52,8 +52,6 @@
                                     <i class="el-icon-more"></i>
                                 </el-tag>
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item><i class="el-icon-circle-plus-outline"></i>Add Task
-                                    </el-dropdown-item>
                                     <el-dropdown-item><i class="el-icon-edit"></i>Edit</el-dropdown-item>
                                     <el-dropdown-item @click.native="archiveCategory(category.info.id)"><i
                                             class="el-icon-collection-tag"></i>Archive
@@ -73,7 +71,12 @@
                                        :list="category.noProgress"
                                        v-bind="dragOptions"
                                        @change="log($event, category.noProgress, category.info.id, 'NO_PROGRESS')">
-                                <TaskItem :is-manager="isManager" class="list-group-item" v-for="task in category.noProgress" :key="task.id"
+                                <TaskItem :is-manager="isManager"
+                                          class="list-group-item"
+                                          :project-id="projectId"
+                                          v-for="task in category.noProgress"
+                                          :key="task.id"
+                                          @taskDeleted="loadData"
                                           :task="task"/>
                                 <div class="padding-5" slot="footer" v-if="isManager">
                                     <TaskDialog is-popover @taskSaved="loadData" :category-id="category.info.id"/>
@@ -95,7 +98,12 @@
                                        :list="category.inProgress"
                                        v-bind="dragOptions"
                                        @change="log($event, category.inProgress, category.info.id, 'IN_PROGRESS')">
-                                <TaskItem :is-manager="isManager" class="list-group-item" v-for="task in category.inProgress" :key="task.id"
+                                <TaskItem :is-manager="isManager"
+                                          class="list-group-item"
+                                          :project-id="projectId"
+                                          v-for="task in category.inProgress"
+                                          :key="task.id"
+                                          @taskDeleted="loadData"
                                           :task="task"/>
                             </draggable>
                         </div>
@@ -113,7 +121,12 @@
                                        :list="category.completed"
                                        v-bind="dragOptions"
                                        @change="log($event, category.completed, category.info.id, 'COMPLETED')">
-                                <TaskItem :is-manager="isManager" class="list-group-item" v-for="task in category.completed" :key="task.id"
+                                <TaskItem :is-manager="isManager"
+                                          class="list-group-item"
+                                          :project-id="projectId"
+                                          v-for="task in category.completed"
+                                          :key="task.id"
+                                          @taskDeleted="loadData"
                                           :task="task"/>
                             </draggable>
                         </div>
@@ -134,7 +147,12 @@
                                        v-bind="dragOptions"
                                        :disabled="!isManager"
                                        @change="log($event, category.verified, category.info.id, 'VERIFIED')">
-                                <TaskItem :is-manager="isManager" class="list-group-item" v-for="task in category.verified" :key="task.id"
+                                <TaskItem :is-manager="isManager"
+                                          :project-id="projectId"
+                                          class="list-group-item"
+                                          v-for="task in category.verified"
+                                          :key="task.id"
+                                          @taskDeleted="loadData"
                                           :task="task"/>
                             </draggable>
                         </div>
@@ -194,9 +212,6 @@
             }
         },
         created() {
-            let vm = this;
-            console.log(this.isManager)
-            console.log(this.projectId)
             this.loadData();
         },
         methods: {
@@ -232,22 +247,26 @@
                 let vm = this;
                 vm.isLoading = false;
                 ProjectService.getTask(vm.projectId).then(response => {
-                    console.log(response);
                     vm.isLoading = false;
                     vm.project = response;
                 }).catch(err => {
-                    AlertService.error("Error load project data");
+                    AlertService.error(err.message);
                 });
             },
-            updateTask(task) {
-                TaskService.update(task).then(response => {
-                    console.log(response);
-                });
+            updateTask(task, cb) {
+                let vm = this;
+                TaskService.updatePosition(task)
+                    .then(response => {
+                        if (cb) cb();
+                    })
+                    .catch(error => {
+                        if (error.status === 403) vm.$router.
+                        AlertService.error(error.message)
+                    })
             },
             updateListTask(tasks) {
                 let vm = this;
                 TaskService.updateListPosition(tasks).then(response => {
-                    console.log(response);
                     vm.loadData();
                 });
             },
@@ -262,8 +281,9 @@
                     let update = this.getNewPos(idx, category);
                     let newPos = update.newPos;
                     vm.$utils.setAttrs(vm, e.added.element, {categoryId: categoryId, status: status, pos: newPos});
-                    vm.updateTask(e.added.element);
-                    if (update.updateList) vm.updateListTask(category);
+                    vm.updateTask(e.added.element, function () {
+                        if (update.updateList) vm.updateListTask(category);
+                    });
                 } else if (e.removed) {
                     // do nothing
                 } else {
@@ -271,8 +291,9 @@
                     let update = this.getNewPos(idx, category);
                     let newPos = update.newPos;
                     vm.$utils.setAttrs(vm, e.moved.element, {pos: newPos});
-                    vm.updateTask(e.moved.element);
-                    if (update.updateList) vm.updateListTask(category);
+                    vm.updateTask(e.moved.element, function () {
+                        if (update.updateList) vm.updateListTask(category);
+                    });
                 }
             },
             getNewPos(idx, category) {
@@ -290,10 +311,8 @@
                     if (before.pos >= current.pos) /* Neu the truoc lon hon the hien tai thi tang */
                         newPos = before.pos + increment;
                 } else if (after) {
-
                     if (after.pos <= current.pos) {
                         newPos = Math.floor(after.pos / 2);
-                        console.log(newPos === 0);
                         if (newPos === after.pos || newPos === 0) updateList = true;
                     }
                 }

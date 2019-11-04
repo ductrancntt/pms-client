@@ -42,12 +42,6 @@ let AccountService = {
             payload
         )
     },
-    getActivationKey(payload){
-        return request.post(
-            baseUrl + "/activation_key",
-            JSON.stringify(payload)
-        )
-    },
     resetPasswordRequest(payload){
         return request.post(
             baseUrl + "/reset_password/request",

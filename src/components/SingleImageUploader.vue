@@ -40,7 +40,6 @@
                 this.$refs["singleImageUploader"].clearFiles();
             },
             reset(){
-                console.log(this.imageUrl);
                 this.displayImageUrl = this.imageUrl;
             },
             getSelectedFile() {

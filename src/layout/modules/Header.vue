@@ -27,7 +27,7 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <UserAvatar :image-url="user.imageUrl" :text="user.firstName" shape="circle"/>
+            <UserAvatar :user="user" :show-tooltip="false"/>
             <el-dropdown trigger="click" class="padding-left-10">
                 <el-button class="el-dropdown-link text-white" type="text">
                     <span>{{user.firstName}} {{user.lastName}}</span>
@@ -35,6 +35,7 @@
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="navigateTo('userProject')">My Project</el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('userInvitation')">My Invitation</el-dropdown-item>
                     <el-dropdown-item @click.native="navigateTo('profile')">My Profile</el-dropdown-item>
                     <el-dropdown-item @click.native="navigateTo('changePassword')">Change Password</el-dropdown-item>
                     <el-dropdown-item @click.native="navigateTo('loginPage')">Logout</el-dropdown-item>

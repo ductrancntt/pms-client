@@ -8,16 +8,6 @@ let CategoryService = {
             JSON.stringify(payload)
         )
     },
-    getAll(payload) {
-        return request.get(
-            baseUrl + "/list"
-        )
-    },
-    get(payload) {
-        return request.get(
-            baseUrl + "/get/" + payload
-        )
-    },
     update(payload) {
         return request.put(
             baseUrl + "/update",

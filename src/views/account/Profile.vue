@@ -2,7 +2,7 @@
     <div class="row flex padding-20">
         <div class="flex"></div>
         <div class="column flex-2">
-            <el-card class="flex" shadow="never">
+            <el-card v-if="user" class="flex" shadow="never">
                 <div class="row flex">
                     <div class="flex">
                         <div class="text-center">
@@ -52,12 +52,7 @@
         data() {
             return {
                 isSaving: false,
-                user: {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    imageUrl: '',
-                },
+                user: null,
                 rules: {
                     firstName: [{
                         required: true,
@@ -80,9 +75,7 @@
         },
         created() {
             AccountService.getCurrentAccount().then(response => {
-                console.log(response);
                 this.user = response;
-                console.log(this.user);
             })
         },
         methods: {

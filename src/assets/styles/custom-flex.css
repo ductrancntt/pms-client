@@ -19,13 +19,6 @@
     box-sizing: border-box;
 }
 
-
-/* Alignment */
-.align-center {
-    align-items: center;
-    justify-content: center;
-}
-
 .v-center:not(.column) {
     align-items: center;
 }
@@ -40,6 +33,12 @@
 
 .h-center.column {
     align-items: center;
+}
+
+/* Alignment */
+.align-center {
+    align-items: center;
+    justify-content: center;
 }
 
 .align-top {

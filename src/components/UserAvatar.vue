@@ -1,12 +1,15 @@
 <template>
-    <div :style="{width: size + 'px', height: size+'px'}" style="cursor: pointer">
-        <el-avatar :shape="shape" v-if="imageUrl != null && imageUrl !== ''" :size="size" :src="imageUrl">
-        </el-avatar>
-        <el-avatar :shape="shape" v-else :size="size" :style="{fontSize: (size*0.4) + 'px'}">
-            <span>
-                {{text[0]}}
-            </span>
-        </el-avatar>
+    <div :style="{width: size + 'px', height: size+'px'}" class="pointer">
+        <el-tooltip @click.native="userProfile" :disabled="!showTooltip" effect="dark"
+                    :content="user.firstName + ' ' + user.lastName"
+                    placement="bottom">
+            <el-avatar :shape="shape" v-if="user.imageUrl != null && user.imageUrl !== ''" :size="size"
+                       :src="user.imageUrl">
+            </el-avatar>
+            <el-avatar v-else :shape="shape"  :size="size" :style="{fontSize: (size*0.4) + 'px'}">
+                <span>{{user.firstName[0]}}</span>
+            </el-avatar>
+        </el-tooltip>
     </div>
 </template>
 
@@ -14,11 +17,11 @@
     export default {
         name: "UserAvatar",
         props: {
-            imageUrl: {
-                type: String,
-            },
-            text: {
-                type: String,
+            user: Object,
+            isRouter: Boolean,
+            showTooltip: {
+                type: Boolean,
+                default: true
             },
             size: {
                 type: Number,
@@ -26,11 +29,18 @@
             },
             shape: {
                 type: String,
-                default: 'square'
+                default: 'circle'
             },
         },
         created() {
-            console.log(this.imageUrl);
+        },
+        methods: {
+            userProfile(){
+                if (this.isRouter){
+                    console.log('Go to: ' + this.user.username);
+                    // this.$router.push({name: 'userProfile', params: {username: this.user.username}});
+                }
+            }
         }
     }
 </script>

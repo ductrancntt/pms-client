@@ -10,7 +10,7 @@
                             :model="formData"
                             ref="loginForm">
                         <el-form-item :label="$t('login.usernameInput')" prop="username">
-                            <el-input v-model="formData.username" placeholder="Username or email"></el-input>
+                            <el-input autofocus v-model="formData.username" placeholder="Username or email"></el-input>
                         </el-form-item>
 
                         <el-form-item :label="$t('login.passwordInput')" prop="password">
@@ -59,10 +59,10 @@
                 isLogging: false,
                 rules: {
                     username: [
-                        { required: true, message: "Please enter username", trigger: "blur" }
+                        {required: true, message: "Please enter username", trigger: "blur"}
                     ],
                     password: [
-                        { required: true, message: "Please enter password", trigger: "blur" }
+                        {required: true, message: "Please enter password", trigger: "blur"}
                     ]
                 }
             }
@@ -81,7 +81,11 @@
                                         AuthService.setCurrentUser(account);
                                         AuthService.setUserAuthorities(account.authorities);
                                         vm.isLogging = false;
-                                        this.$router.push({path: "/"});
+                                        if (sessionStorage.getItem('requested-url')) {
+                                            let item = sessionStorage.getItem('requested-url');
+                                            sessionStorage.removeItem('requested-url');
+                                            vm.$router.push({path: item});
+                                        } else vm.$router.push({path: "/"});
                                     })
                                     .catch(error => {
                                         vm.isLogging = false;

@@ -8,6 +8,7 @@ router.beforeEach((to, from, next) => {
     if (to.meta && to.meta.authorities && to.meta.authorities.length > 0) {
         if (!AuthService.hasAuthority(to.meta.authorities)) {
             if (!AuthService.isAuthenticated()) {
+                sessionStorage.setItem('requested-url', to.fullPath);
                 next('/login');
             } else {
                 next('/forbidden');

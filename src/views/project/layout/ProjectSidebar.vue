@@ -119,4 +119,8 @@
     /deep/ .is-active {
         background-color: #e6f0f6;
     }
+
+    /deep/ .el-menu {
+        border-right-width: 0;
+    }
 </style>

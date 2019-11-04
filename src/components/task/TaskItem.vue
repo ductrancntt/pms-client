@@ -11,7 +11,7 @@
                             <el-button style="" class="padding-0 priority-button"></el-button>
                         </el-tooltip>
                         <el-tooltip v-else-if="task.priority === 'LOW'" effect="dark" content="Low" placement="bottom">
-                            <el-button type="info" class="padding-0 priority-button"></el-button>
+                            <el-button type="success" class="padding-0 priority-button"></el-button>
                         </el-tooltip>
                         <el-tooltip v-else-if="task.priority === 'MEDIUM'" effect="dark" content="Medium"
                                     placement="bottom">
@@ -27,16 +27,14 @@
                     </div>
                     <div class="row">
                         <div v-for="user in task.users" :key="user.id" style="align-items: flex-end">
-                            <el-tooltip effect="dark" :content="user.firstName + ' ' + user.lastName" placement="bottom">
-                                <UserAvatar style="padding-left: 3px" :size="25" shape="circle"
-                                            :image-url="user.imageUrl" :text="user.firstName"/>
-                            </el-tooltip>
+                            <UserAvatar style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
                         </div>
                     </div>
                 </div>
             </div>
         </el-card>
-        <TaskDrawer :is-manager="isManager" ref="drawer"/>
+        <TaskDrawer :project-id="projectId" :task-id="task.id" :is-manager="isManager" @deleteTask="deleteTask"
+                    ref="drawer"/>
     </div>
 </template>
 
@@ -48,7 +46,8 @@
         name: "TaskItem",
         components: {UserAvatar, TaskDrawer},
         props: {
-            isManager:{
+            projectId: Number,
+            isManager: {
                 type: Boolean,
                 required: true
             },
@@ -91,8 +90,10 @@
         ,
         methods: {
             showDrawer() {
-                console.log(this.task);
-                this.$refs.drawer.show(this.task);
+                this.$refs.drawer.show();
+            },
+            deleteTask() {
+                this.$emit("taskDeleted");
             }
         }
     }

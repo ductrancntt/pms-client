@@ -3,12 +3,12 @@
         <div id="comment-body" class="column padding-bottom-20">
             <div class="row">
                 <div class="flex">
-                    <el-input @keyup.native.enter="submit" type="textarea" v-model="comment.content"
+                    <el-input type="textarea" v-model="comment.content"
                               placeholder="Type your comment here"
                               rows="2"></el-input>
                     <div class="padding-top-10">
-                        <el-button type="primary" size="small" :disabled="!comment.content" @click="submit">Add
-                            Comment
+                        <el-button type="primary" size="small" :disabled="!comment.content || isCommenting" @click="submit">
+                            Add Comment
                         </el-button>
                     </div>
                 </div>
@@ -49,6 +49,7 @@
         },
         data() {
             return {
+                isCommenting: false,
                 comment: {
                     id: null,
                     content: '',
@@ -78,6 +79,7 @@
             submit() {
                 let vm = this;
                 let params = new FormData();
+                vm.isCommenting = true;
                 vm.comment.taskId = vm.taskId;
                 params.append("dto", new Blob([JSON.stringify(vm.comment)], {type: 'application/json'}));
                 vm.selectedFiles = vm.$refs.attachmentUploader.getUploadFiles();
@@ -87,6 +89,7 @@
                 CommentService.create(params).then(onSuccess).catch(onError);
 
                 function onSuccess(data) {
+                    vm.isCommenting = false;
                     vm.reset();
                     vm.loadComments();
                 }

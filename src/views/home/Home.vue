@@ -53,10 +53,12 @@
 </template>
 
 <script>
-    import ProjectDialog from "@/views/project/components/ProjectDialog";
+    import ProjectDialog from "@/components/project/ProjectDialog";
     import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
     import ProjectService from "@/service/project.service";
+    import UserProjectService from "@/service/user-project.service";
+    import AlertService from "@/service/alert.service";
 
     export default {
         name: "Home",
@@ -84,9 +86,9 @@
             },
             loadProject() {
                 let vm = this;
-                ProjectService.getAll().then(response => {
+                UserProjectService.getProjectByCurrentUser().then(response => {
                     vm.listProject = response;
-                })
+                }).catch(error => AlertService.error(error.message));
             }
         }
     }

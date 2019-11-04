@@ -8,11 +8,6 @@ let TaskService = {
             JSON.stringify(payload)
         )
     },
-    getAll(payload) {
-        return request.get(
-            baseUrl + "/list"
-        )
-    },
     get(payload) {
         return request.get(
             baseUrl + "/get/" + payload
@@ -21,18 +16,29 @@ let TaskService = {
     update(payload) {
         return request.put(
             baseUrl + "/update",
-            JSON.stringify(payload)
+            payload,
+            {
+                headers: {
+                    'Content-Type': undefined
+                }
+            }
         )
     },
-    delete(payload) {
-        return request.delete(
-            baseUrl + "/delete/" + payload
+    updatePosition(payload) {
+        return request.put(
+            baseUrl + "/update-position",
+            JSON.stringify(payload)
         )
     },
     updateListPosition(payload) {
         return request.put(
             baseUrl + "/update-list-position",
             JSON.stringify(payload)
+        )
+    },
+    delete(payload) {
+        return request.delete(
+            baseUrl + "/delete/" + payload
         )
     },
 };

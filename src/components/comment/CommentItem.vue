@@ -2,11 +2,7 @@
     <div>
         <div class="row">
             <div>
-                <el-tooltip effect="dark" :content="comment.author.firstName + ' ' + comment.author.lastName"
-                            placement="bottom">
-                    <UserAvatar :size="35" shape="circle" :image-url="comment.author.imageUrl"
-                                :text="comment.author.firstName"/>
-                </el-tooltip>
+                <UserAvatar :size="35" :user="comment.author"/>
             </div>
             <div class="column flex padding-left-10">
                 <div class="column" style="background: #F2F3F5; border-radius: 18px; padding: 8px 10px">
@@ -21,17 +17,14 @@
                                         <AttachmentUploader ref="attachmentUploader" text="Attach file"/>
                                     </div>
                                     <div>
-                                        <el-button type="primary" size="small" @click="updateComment">Save</el-button>
-                                        <el-button size="small" @click="cancel">Cancel</el-button>
+                                        <el-button type="primary" size="mini" @click="updateComment">Save</el-button>
+                                        <el-button type="info" size="mini" @click="cancel">Cancel</el-button>
                                     </div>
                                 </div>
                             </div>
                             <div v-else>
-                                <a style="font-weight: 500; color: #026AA7; cursor: pointer" class="item-link">{{comment.author.firstName}}
-                                    {{comment.author.lastName}}</a>
-                                <span>
-                                    {{comment.content.trim()}}
-                                </span>
+                                <a style="font-weight: 500; color: #026AA7; cursor: pointer" class="item-link">{{comment.author.firstName}} {{comment.author.lastName}}</a><br>
+                                <span style="white-space: pre-wrap;">{{comment.content.trim()}}</span>
                             </div>
                         </div>
                         <div id="action" v-if="!editMode && hasRight">
@@ -52,7 +45,7 @@
                     </div>
                     <div class="row" style="justify-content: flex-end">
                         <el-tag class="margin-left-5" style="cursor: pointer" @click="" size="mini"
-                                v-for="att in comment.attachments">
+                                v-for="att in comment.attachments" :key="att.id">
                             <el-icon name="paperclip"/>
                             <a :href="att.url" download>{{att.name}}</a>
                             <el-icon v-if="editMode" @click.native="removeAttachment(att)" style="font-size: 12pt; padding: 0 0 0 8px"
@@ -171,5 +164,8 @@
 
     .item-link:hover {
         text-decoration: underline;
+    }
+    /deep/textarea{
+        border-radius: 12px;
     }
 </style>

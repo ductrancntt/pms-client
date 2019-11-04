@@ -1,7 +1,6 @@
 <template>
     <el-popover
             v-cloak
-            class="margin-10"
             placement="top"
             width="180"
             @show="trigger"

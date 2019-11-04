@@ -1,18 +1,19 @@
 <template>
     <el-drawer
+            ref="drawer"
             :destroy-on-close="true"
-            title="Task Detail"
             :visible.sync="visible"
             direction="rtl"
             :before-close="hide"
-            size="50%">
-        <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
-            <div class="text-right padding-bottom-20" v-if="isManager">
+            size="60%">
+        <div slot="title" class="row v-center">
+            <div class="flex">Task Detail</div>
+            <div class="row v-center padding-right-20" v-if="isManager">
                 <el-button size="mini" type="primary" v-if="editMode" @click="submit">
                     <el-icon name="circle-check"/>
                     Save
                 </el-button>
-                <el-button size="mini" type="danger" v-if="!editMode" @click="deleteTask">
+                <el-button plain size="mini" type="danger" v-if="!editMode" @click="deleteTask">
                     <el-icon name="delete"/>
                     Delete
                 </el-button>
@@ -21,39 +22,56 @@
                     <span v-else><el-icon name="edit"/> Edit</span>
                 </el-button>
             </div>
+        </div>
+        <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
             <div v-if="!editMode" class="column">
                 <div id="content" class="row">
                     <table class="table">
                         <tr>
-                            <td>Name: {{task.name}}</td>
-                            <td>Created by: {{task.creator.firstName}} {{task.creator.lastName}}</td>
+                            <td colspan="2">Name: <span style="font-weight: 500">{{task.name}}</span></td>
                         </tr>
                         <tr>
-                            <td>Start/Due Date: <span v-if="task.estimateStartDate">{{task.estimateStartDate | moment("DD/MMM")}}</span>
-                                <el-icon name="right"/>
-                                <span v-if="task.estimateEndDate ">{{task.estimateEndDate | moment("DD/MMM")}}</span>
+                            <td>Created by:
+                                <a style="font-weight: 500; color: #026AA7; cursor: pointer"
+                                   class="item-link">{{task.creator.firstName}} {{task.creator.lastName}}</a>
                             </td>
-                            <td>Priority: {{task.priority}}</td>
+                            <td>Start/Due Date:
+                                <span v-if="task.estimateStartDate || task.estimateEndDate">
+                                    <span v-if="task.estimateStartDate">{{task.estimateStartDate | moment("DD/MMM")}}</span>
+                                        <el-icon name="right"/>
+                                    <span v-if="task.estimateEndDate">{{task.estimateEndDate | moment("DD/MMM")}}</span>
+                                </span>
+                                <span v-else>
+                                    <el-tag type="info" size="mini">Not set</el-tag>
+                                </span>
+                            </td>
+
                         </tr>
                         <tr>
-                            <td>Status: {{task.status}}</td>
+                            <td>Priority:
+                                <TaskPriority :text="task.priority"/>
+                            </td>
+                            <td>Status:
+                                <TaskStatus :text="task.status"/>
+                            </td>
+
+                        </tr>
+                        <tr>
                             <td>Assigned to:
                                 <div class="row">
                                     <div v-for="user in task.users" :key="user.id" style="align-items: flex-end">
-                                        <el-tooltip effect="dark" :content="user.firstName + ' ' + user.lastName" placement="bottom">
-                                            <UserAvatar style="padding-right: 3px" :size="25" shape="circle"
-                                                        :image-url="user.imageUrl" :text="user.firstName"/>
-                                        </el-tooltip>
+                                        <UserAvatar style="padding-right: 3px" :size="25" shape="circle" :user="user"/>
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <tr></tr>
                     </table>
                 </div>
                 <div>
                     <el-divider content-position="left">Description</el-divider>
-                    <p v-html="task.description? task.description : '<i>No description</i>'"></p>
+                    <div class="padding-top-10 padding-bottom-10">
+                        <p v-html="task.description? task.description : '<i>No description</i>'"></p>
+                    </div>
                 </div>
                 <div id="attachment" v-if="task.attachments && task.attachments.length > 0">
                     <el-divider content-position="left">Attachment</el-divider>
@@ -61,7 +79,7 @@
 
                 <div id="comment-thread">
                     <el-divider content-position="left">Comment</el-divider>
-                    <Comment :task-id="task.id" />
+                    <Comment :task-id="task.id"/>
                 </div>
                 <div id="activity">
                     <el-divider content-position="left">Activities</el-divider>
@@ -80,14 +98,14 @@
             <div v-else>
                 <el-form :model="task">
                     <el-form-item>
-                        <el-col :span="16">
+                        <el-col :span="11">
                             <el-form-item>
                                 <InputLabel label="Name"/>
                                 <el-input v-model="task.name"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="2">&nbsp;</el-col>
-                        <el-col :span="6">
+                        <el-col :span="11">
                             <el-form-item>
                                 <InputLabel label="Priority"/>
                                 <el-select class="width-100" default-first-option v-model="task.priority"
@@ -104,9 +122,37 @@
                         </el-col>
                     </el-form-item>
                     <el-form-item>
-                        <InputLabel label="Description"/>
-                        <ckeditor :class="'ckeditor-content'" :editor="editor" v-model="task.description"
-                                  :config="editorConfig"/>
+
+                        <el-col :span="11">
+                            <el-form-item>
+                                <InputLabel label="Assign To"/>
+                                <el-select multiple
+                                           class="width-100"
+                                           v-model="selectedUser"
+                                           @change="change"
+                                           placeholder="Select users">
+                                    <el-option
+                                            v-for="item in task.unassignedUsers"
+                                            :key="item.id"
+                                            :label="item.firstName + ' ' + item.lastName"
+                                            :value="item.id">
+                                        <span style="float: left"><UserAvatar :user="item"/></span>
+                                        <span class="padding-left-10" style="font-size: 13px">
+                                    {{item.firstName}} {{item.lastName}}
+                                </span>
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="2">&nbsp;</el-col>
+                        <el-col :span="11">
+                            <el-form-item>
+                                <InputLabel label="Members in Task"/>
+                                <div v-for="user in task.users" :key="user.id" style="align-items: flex-end">
+                                    <UserAvatar style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
+                                </div>
+                            </el-form-item>
+                        </el-col>
                     </el-form-item>
                     <el-form-item>
                         <el-col :span="11">
@@ -123,11 +169,14 @@
                             </el-form-item>
                         </el-col>
                     </el-form-item>
-                    <el-form-item label="Assign To">
-                        <el-select multiple
-                        placeholder="Select users">
-
-                        </el-select>
+                    <el-form-item>
+                        <InputLabel label="Description"/>
+                        <ckeditor :class="'ckeditor-content'" :editor="editor" v-model="task.description"
+                                  :config="editorConfig"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <InputLabel label="Attachment"/>
+                        <AttachmentUploader style="width: 100%" ref="attachmentUploader" text="Attach file"/>
                     </el-form-item>
                 </el-form>
             </div>
@@ -141,14 +190,18 @@
     import UserAvatar from "@/components/UserAvatar";
     import ActivityService from "@/service/activity.service";
     import Comment from "@/components/comment/Comment";
-    import AccountService from "@/service/account.service";
-    import ProjectService from "@/service/project.service";
+    import TaskPriority from "@/components/task/TaskPriority";
+    import TaskStatus from "@/components/task/TaskStatus";
+    import AlertService from "@/service/alert.service";
+    import AttachmentUploader from "@/components/AttachmentUploader";
 
     export default {
         name: "TaskDrawer",
-        components: {Comment, UserAvatar},
+        components: {AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
         props: {
-            isManager:{
+            projectId: Number,
+            taskId: Number,
+            isManager: {
                 type: Boolean,
                 required: true
             },
@@ -172,6 +225,8 @@
                 ],
                 comments: [],
                 commentText: '',
+                selectedUser: [],
+                selectedFiles: [],
                 task: {
                     id: null,
                     name: null,
@@ -188,31 +243,37 @@
                     creator: {},
                     users: [],
                     attachments: [],
+                    unassignedUsers: [],
                 },
                 activities: [],
             }
         },
         methods: {
-
-            loadProjectUser(){
+            change(value) {
+                console.log(value);
             },
             toggleEditMode() {
                 this.editMode = !this.editMode;
             },
-            show(task) {
+            loadTaskContent() {
                 let vm = this;
-                vm.visible = true;
                 vm.isLoading = true;
-                TaskService.get(task.id).then(response => {
-                    console.log(response);
+                TaskService.get(vm.taskId).then(response => {
                     vm.task = response;
                     vm.isLoading = false;
                 });
-                ActivityService.getByTaskId(task.id).then(res => {
+                ActivityService.getByTaskId(vm.taskId).then(res => {
+                    console.log(res);
                     vm.activities = res;
                 });
             },
+            show() {
+                let vm = this;
+                vm.visible = true;
+                vm.loadTaskContent();
+            },
             hide(done) {
+                console.log('closed');
                 this.visible = false;
                 this.editMode = false;
                 done();
@@ -221,10 +282,18 @@
                 let vm = this;
                 vm.isSaving = true;
                 TaskService.update(vm.task).then(response => {
-                    console.log(response);
-                });
+                    vm.editMode = false;
+                }).catch(err => AlertService.error("Error"))
             },
-            deleteTask(id) {
+            deleteTask() {
+                let vm = this;
+                AlertService.confirm("Delete this task?", function () {
+                    TaskService.delete(vm.taskId).then(res => {
+                        vm.visible = false;
+                        vm.$refs.drawer.closeDrawer();
+                        vm.$emit('deleteTask');
+                    }).catch(err => AlertService.error("Error"))
+                });
 
             }
         }
@@ -244,12 +313,18 @@
     }
 
     /deep/ .ck-content {
-        height: 150px;
-        min-height: 150px;
+        height: 100px;
+        min-height: 100px;
     }
 
     .table {
         width: 100%;
         table-layout: fixed;
+        line-height: 2;
+        font-size: 11pt;
+    }
+
+    .item-link:hover {
+        text-decoration: underline;
     }
 </style>
