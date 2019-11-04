@@ -96,16 +96,7 @@
 
                 <div id="activity" v-loading="isLoadingActivity">
                     <el-divider content-position="left">Activities</el-divider>
-                    <ul>
-                        <li class="padding-bottom-5" style="list-style-type: none" v-for="activity in activities">
-                            <el-card shadow="never">
-                                <div class="row">
-                                    <span v-html="activity.content" class="flex"></span>
-                                    <span>{{activity.createdDate | moment("HH:mm - DD/MM/YYYY")}}</span>
-                                </div>
-                            </el-card>
-                        </li>
-                    </ul>
+                    <Activity v-for="act in activities" :key="act.id" :activity="act" />
                 </div>
             </div>
             <div v-else>
@@ -208,10 +199,11 @@
     import AlertService from "@/service/alert.service";
     import AttachmentUploader from "@/components/AttachmentUploader";
     import Attachment from "@/components/attachment/Attachment";
+    import Activity from "@/components/activity/Activity";
 
     export default {
         name: "TaskDrawer",
-        components: {Attachment, AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
+        components: {Activity, Attachment, AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
         props: {
             projectId: Number,
             taskId: Number,

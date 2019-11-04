@@ -339,7 +339,7 @@
     }
 
     .list-group-item {
-        
+
     }
 
     .ghost {
