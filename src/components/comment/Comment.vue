@@ -7,7 +7,8 @@
                               placeholder="Type your comment here"
                               rows="2"></el-input>
                     <div class="padding-top-10">
-                        <el-button type="primary" size="small" :disabled="!comment.content || isCommenting" @click="submit">
+                        <el-button type="primary" size="small" :disabled="!comment.content || isCommenting"
+                                   @click="submit">
                             Add Comment
                         </el-button>
                     </div>
@@ -64,9 +65,9 @@
         },
         methods: {
             loadComments() {
-                console.log("loadComment");
                 let vm = this;
                 CommentService.getByTask(this.taskId).then(response => {
+                    console.log(response);
                     vm.listComment = response;
                 }).catch(error => AlertService.error("Error loading comment!"));
             },
@@ -86,6 +87,7 @@
                 vm.selectedFiles.forEach(file => {
                     params.append("files", file.raw);
                 });
+
                 CommentService.create(params).then(onSuccess).catch(onError);
 
                 function onSuccess(data) {

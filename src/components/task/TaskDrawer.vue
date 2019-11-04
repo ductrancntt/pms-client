@@ -25,7 +25,7 @@
         </div>
         <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
             <div v-if="!editMode" class="column">
-                <div id="content" class="row">
+                <div id="basic" class="row">
                     <table class="table">
                         <tr>
                             <td colspan="2">Name: <span style="font-weight: 500">{{task.name}}</span></td>
@@ -45,7 +45,6 @@
                                     <el-tag type="info" size="mini">Not set</el-tag>
                                 </span>
                             </td>
-
                         </tr>
                         <tr>
                             <td>Priority:
@@ -54,20 +53,31 @@
                             <td>Status:
                                 <TaskStatus :text="task.status"/>
                             </td>
-
                         </tr>
                         <tr>
-                            <td>Assigned to:
-                                <div class="row">
-                                    <div v-for="user in task.users" :key="user.id" style="align-items: flex-end">
+                            <td>
+                                <div class="row v-center">
+                                    <span>Assigned to:&nbsp;</span>
+                                    <div v-for="user in task.assignedUsers" :key="user.id"
+                                         style="align-items: flex-end">
                                         <UserAvatar style="padding-right: 3px" :size="25" shape="circle" :user="user"/>
                                     </div>
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td colspan="2">
+                                <span>Progress:</span>
+                                <el-slider
+                                        @change="updateProgress"
+                                        v-model="task.progress"
+                                        show-input>
+                                </el-slider>
+                            </td>
+                        </tr>
                     </table>
                 </div>
-                <div>
+                <div id="description">
                     <el-divider content-position="left">Description</el-divider>
                     <div class="padding-top-10 padding-bottom-10">
                         <p v-html="task.description? task.description : '<i>No description</i>'"></p>
@@ -75,13 +85,16 @@
                 </div>
                 <div id="attachment" v-if="task.attachments && task.attachments.length > 0">
                     <el-divider content-position="left">Attachment</el-divider>
+                    <Attachment v-for="att in task.attachments" :key="att.id" class="margin-left-5"
+                                :attachment="att"/>
                 </div>
 
                 <div id="comment-thread">
                     <el-divider content-position="left">Comment</el-divider>
                     <Comment :task-id="task.id"/>
                 </div>
-                <div id="activity">
+
+                <div id="activity" v-loading="isLoadingActivity">
                     <el-divider content-position="left">Activities</el-divider>
                     <ul>
                         <li class="padding-bottom-5" style="list-style-type: none" v-for="activity in activities">
@@ -118,18 +131,15 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
-
                         </el-col>
                     </el-form-item>
                     <el-form-item>
-
                         <el-col :span="11">
                             <el-form-item>
                                 <InputLabel label="Assign To"/>
                                 <el-select multiple
                                            class="width-100"
-                                           v-model="selectedUser"
-                                           @change="change"
+                                           v-model="task.assignUserIds"
                                            placeholder="Select users">
                                     <el-option
                                             v-for="item in task.unassignedUsers"
@@ -147,35 +157,38 @@
                         <el-col :span="2">&nbsp;</el-col>
                         <el-col :span="11">
                             <el-form-item>
-                                <InputLabel label="Members in Task"/>
-                                <div v-for="user in task.users" :key="user.id" style="align-items: flex-end">
-                                    <UserAvatar style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
-                                </div>
+                                <InputLabel label="Estimate"/>
+                                <el-date-picker
+                                        v-model="dateRange"
+                                        format="dd/MM/yyyy"
+                                        type="daterange"
+                                        range-separator="To"
+                                        start-placeholder="Start date"
+                                        end-placeholder="End date">
+                                </el-date-picker>
                             </el-form-item>
                         </el-col>
                     </el-form-item>
                     <el-form-item>
-                        <el-col :span="11">
-                            <el-form-item>
-                                <InputLabel label="Start Date"/>
-                                <el-date-picker class="width-100" type="datetime" v-model="task.estimateStartDate"/>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">&nbsp;</el-col>
-                        <el-col :span="11">
-                            <el-form-item>
-                                <InputLabel label="End Date"/>
-                                <el-date-picker class="width-100" type="datetime" v-model="task.estimateEndDate"/>
-                            </el-form-item>
-                        </el-col>
+                        <el-form-item>
+                            <InputLabel label="Members in Task (Click avatar to remove)"/>
+                            <div class="row">
+                                <div v-for="user in task.assignedUsers" :key="user.id" style="align-items: flex-end">
+                                    <UserAvatar @click.native="removeUser(user)" style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
+                                </div>
+                            </div>
+                        </el-form-item>
                     </el-form-item>
                     <el-form-item>
                         <InputLabel label="Description"/>
-                        <ckeditor :class="'ckeditor-content'" :editor="editor" v-model="task.description"
-                                  :config="editorConfig"/>
+                        <ckeditor :class="'ckeditor-content'" :editor="editor" v-model="task.description"/>
                     </el-form-item>
                     <el-form-item>
                         <InputLabel label="Attachment"/>
+                        <Attachment v-for="att in task.attachments" :key="att.id" class="margin-left-5"
+                                    :removable="editMode"
+                                    :on-close="removeAttachment"
+                                    :attachment="att"/>
                         <AttachmentUploader style="width: 100%" ref="attachmentUploader" text="Attach file"/>
                     </el-form-item>
                 </el-form>
@@ -194,10 +207,11 @@
     import TaskStatus from "@/components/task/TaskStatus";
     import AlertService from "@/service/alert.service";
     import AttachmentUploader from "@/components/AttachmentUploader";
+    import Attachment from "@/components/attachment/Attachment";
 
     export default {
         name: "TaskDrawer",
-        components: {AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
+        components: {Attachment, AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
         props: {
             projectId: Number,
             taskId: Number,
@@ -210,10 +224,8 @@
             return {
                 editor: ClassicEditor,
                 editMode: false,
-                editorConfig: {
-                    readOnly: true
-                },
                 isLoading: false,
+                isLoadingActivity: false,
                 isSaving: false,
                 visible: false,
                 taskPriority: [
@@ -223,67 +235,114 @@
                     {id: 4, label: 'High', value: 'HIGH'},
                     {id: 5, label: 'Very high', value: 'VERY_HIGH'}
                 ],
-                comments: [],
-                commentText: '',
-                selectedUser: [],
-                selectedFiles: [],
                 task: {
                     id: null,
                     name: null,
                     description: null,
                     pos: null,
-                    startDate: null,
-                    endDate: null,
+                    priority: 'NONE',
+                    progress: null,
                     estimateStartDate: null,
                     estimateEndDate: null,
+                    startDate: null,
+                    endDate: null,
                     status: 'NO_PROGRESS',
-                    priority: 'NONE',
-                    categoryId: null,
                     overdue: false,
+                    reminded: false,
+                    categoryId: null,
                     creator: {},
-                    users: [],
-                    attachments: [],
+                    assignedUsers: [],
                     unassignedUsers: [],
+                    assignUserIds: [],
+                    removeAssignUserIds: [],
+                    attachments: [],
+                    removeAttachments: [],
                 },
+                dateRange: null,
+                selectedFiles: [],
                 activities: [],
             }
         },
         methods: {
-            change(value) {
-                console.log(value);
+            removeUser(user){
+                console.log(user);
+                if (!this.task.removeAssignUserIds) this.task.removeAssignUserIds = [];
+                this.task.removeAssignUserIds.push(user.id);
+                this.task.assignedUsers = this.task.assignedUsers.filter(a => a.id !== user.id)
+                this.task.unassignedUsers.push(user);
+            },
+            removeAttachment(att) {
+                if (!this.task.removeAttachments) this.task.removeAttachments = [];
+                this.task.removeAttachments.push(att);
+                this.task.attachments = this.task.attachments.filter(a => a.id !== att.id)
+            },
+            reset() {
+                let vm = this;
+                vm.task = {};
+                vm.activities = [];
+                vm.selectedFiles = [];
+                vm.$refs.attachmentUploader.clearFiles();
             },
             toggleEditMode() {
                 this.editMode = !this.editMode;
+            },
+            loadTaskActivities() {
+                let vm = this;
+                vm.isLoadingActivity = true;
+                ActivityService.getByTaskId(vm.taskId).then(response => {
+                    vm.activities = response;
+                    vm.isLoadingActivity = false;
+                });
             },
             loadTaskContent() {
                 let vm = this;
                 vm.isLoading = true;
                 TaskService.get(vm.taskId).then(response => {
                     vm.task = response;
+                    vm.dateRange = [vm.task.estimateStartDate, vm.task.estimateEndDate]
                     vm.isLoading = false;
-                });
-                ActivityService.getByTaskId(vm.taskId).then(res => {
-                    console.log(res);
-                    vm.activities = res;
                 });
             },
             show() {
                 let vm = this;
                 vm.visible = true;
                 vm.loadTaskContent();
+                vm.loadTaskActivities();
             },
             hide(done) {
-                console.log('closed');
                 this.visible = false;
                 this.editMode = false;
                 done();
             },
             submit() {
                 let vm = this;
+                let params = new FormData();
                 vm.isSaving = true;
-                TaskService.update(vm.task).then(response => {
+                vm.task.estimateStartDate = vm.dateRange[0];
+                vm.task.estimateEndDate = vm.dateRange[1];
+                params.append("dto", new Blob([JSON.stringify(vm.task)], {type: 'application/json'}));
+                vm.selectedFiles = vm.$refs.attachmentUploader.getUploadFiles();
+                vm.selectedFiles.forEach(file => {
+                    params.append("files", file.raw);
+                });
+
+                TaskService.update(params).then(response => {
                     vm.editMode = false;
+                    vm.$emit("taskUpdated", vm.task);
+                    vm.loadTaskContent();
+                    vm.loadTaskActivities();
                 }).catch(err => AlertService.error("Error"))
+            },
+            updateProgress() {
+                let vm = this;
+                let progress = vm.task.progress;
+                TaskService.updateProgress(vm.task).then(response => {
+                    vm.loadTaskActivities();
+                    vm.$emit("taskUpdated", vm.task);
+                }).catch(error => {
+                    vm.task.progress = progress;
+                    AlertService.error("Can't update task progress. Try again!")
+                })
             },
             deleteTask() {
                 let vm = this;
@@ -294,7 +353,6 @@
                         vm.$emit('deleteTask');
                     }).catch(err => AlertService.error("Error"))
                 });
-
             }
         }
     }

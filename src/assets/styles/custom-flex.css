@@ -14,6 +14,10 @@
     min-height: 0;
 }
 
+.no-wrap{
+    flex-wrap: nowrap !important;
+}
+
 .flex {
     flex: 1;
     box-sizing: border-box;
@@ -23,11 +27,11 @@
     align-items: center;
 }
 
-.h-center:not(.column) {
+.v-center.column {
     justify-content: center;
 }
 
-.v-center.column {
+.h-center:not(.column) {
     justify-content: center;
 }
 

@@ -77,6 +77,7 @@
                                           v-for="task in category.noProgress"
                                           :key="task.id"
                                           @taskDeleted="loadData"
+                                          @taskChange="taskChange($event, task)"
                                           :task="task"/>
                                 <div class="padding-5" slot="footer" v-if="isManager">
                                     <TaskDialog is-popover @taskSaved="loadData" :category-id="category.info.id"/>
@@ -104,6 +105,7 @@
                                           v-for="task in category.inProgress"
                                           :key="task.id"
                                           @taskDeleted="loadData"
+                                          @taskChange="taskChange($event, task)"
                                           :task="task"/>
                             </draggable>
                         </div>
@@ -126,6 +128,7 @@
                                           :project-id="projectId"
                                           v-for="task in category.completed"
                                           :key="task.id"
+                                          @taskChange="taskChange($event, task)"
                                           @taskDeleted="loadData"
                                           :task="task"/>
                             </draggable>
@@ -153,6 +156,7 @@
                                           v-for="task in category.verified"
                                           :key="task.id"
                                           @taskDeleted="loadData"
+                                          @taskChange="taskChange($event, task)"
                                           :task="task"/>
                             </draggable>
                         </div>
@@ -199,7 +203,7 @@
         computed: {
             dragOptions() {
                 return {
-                    animation: 200,
+                    animation: 300,
                     group: "task",
                     ghostClass: "ghost",
                 };
@@ -215,6 +219,10 @@
             this.loadData();
         },
         methods: {
+            taskChange(data, task) {
+                let vm = this;
+                vm.$utils.setAttrs(vm, task, data);
+            },
             deleteCategory(id) {
                 let vm = this;
                 AlertService.confirm("Confirm delete category?", function () {
@@ -260,8 +268,8 @@
                         if (cb) cb();
                     })
                     .catch(error => {
-                        if (error.status === 403) vm.$router.
-                        AlertService.error(error.message)
+                        if (error.status === 403)
+                            AlertService.error(error.message)
                     })
             },
             updateListTask(tasks) {
@@ -331,7 +339,7 @@
     }
 
     .list-group-item {
-
+        
     }
 
     .ghost {

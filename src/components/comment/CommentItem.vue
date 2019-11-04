@@ -23,7 +23,8 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <a style="font-weight: 500; color: #026AA7; cursor: pointer" class="item-link">{{comment.author.firstName}} {{comment.author.lastName}}</a><br>
+                                <a style="font-weight: 500; color: #026AA7; cursor: pointer" class="item-link">{{comment.author.firstName}}
+                                    {{comment.author.lastName}}</a><br>
                                 <span style="white-space: pre-wrap;">{{comment.content.trim()}}</span>
                             </div>
                         </div>
@@ -44,13 +45,10 @@
                         </div>
                     </div>
                     <div class="row" style="justify-content: flex-end">
-                        <el-tag class="margin-left-5" style="cursor: pointer" @click="" size="mini"
-                                v-for="att in comment.attachments" :key="att.id">
-                            <el-icon name="paperclip"/>
-                            <a :href="att.url" download>{{att.name}}</a>
-                            <el-icon v-if="editMode" @click.native="removeAttachment(att)" style="font-size: 12pt; padding: 0 0 0 8px"
-                                     name="close"/>
-                        </el-tag>
+                        <Attachment v-for="att in comment.attachments" :key="att.id" class="margin-left-5"
+                                    :removable="editMode"
+                                    :on-close="removeAttachment"
+                                    :attachment="att"/>
                     </div>
                 </div>
                 <div class="row padding-top-5" style="justify-content: flex-end">
@@ -68,10 +66,11 @@
     import AlertService from "@/service/alert.service";
     import AuthService from "@/service/auth.service";
     import AttachmentUploader from "@/components/AttachmentUploader";
+    import Attachment from "@/components/attachment/Attachment";
 
     export default {
         name: "CommentItem",
-        components: {AttachmentUploader, UserAvatar},
+        components: {Attachment, AttachmentUploader, UserAvatar},
         props: {
             commentProps: {
                 type: Object,
@@ -98,8 +97,8 @@
                     content: '',
                     edited: null,
                     taskId: null,
-                    removeAttachments: [],
                     attachments: [],
+                    removeAttachments: [],
                     author: null,
                     createdDate: null,
                     lastModifiedDate: null
@@ -165,7 +164,8 @@
     .item-link:hover {
         text-decoration: underline;
     }
-    /deep/textarea{
+
+    /deep/ textarea {
         border-radius: 12px;
     }
 </style>

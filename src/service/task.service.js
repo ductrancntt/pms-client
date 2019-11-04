@@ -24,6 +24,12 @@ let TaskService = {
             }
         )
     },
+    updateProgress(payload) {
+        return request.put(
+            baseUrl + "/update-progress",
+            JSON.stringify(payload)
+        )
+    },
     updatePosition(payload) {
         return request.put(
             baseUrl + "/update-position",
