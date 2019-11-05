@@ -65,7 +65,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr v-if="task.status === 'IN_PROGRESS'">
                             <td colspan="2">
                                 <span>Progress:</span>
                                 <el-slider
@@ -96,7 +96,11 @@
 
                 <div id="activity" v-loading="isLoadingActivity">
                     <el-divider content-position="left">Activities</el-divider>
-                    <Activity v-for="act in activities" :key="act.id" :activity="act" />
+                    <div v-for="act in activities" >
+                        <Activity :key="act.id" :activity="act" />
+                        <el-divider class="margin-10"/>
+                    </div>
+
                 </div>
             </div>
             <div v-else>
@@ -250,7 +254,7 @@
                     attachments: [],
                     removeAttachments: [],
                 },
-                dateRange: null,
+                dateRange: [],
                 selectedFiles: [],
                 activities: [],
             }
@@ -272,6 +276,7 @@
                 let vm = this;
                 vm.task = {};
                 vm.activities = [];
+                vm.dateRange = [];
                 vm.selectedFiles = [];
                 vm.$refs.attachmentUploader.clearFiles();
             },
@@ -291,7 +296,8 @@
                 vm.isLoading = true;
                 TaskService.get(vm.taskId).then(response => {
                     vm.task = response;
-                    vm.dateRange = [vm.task.estimateStartDate, vm.task.estimateEndDate]
+                    vm.dateRange = [vm.task.estimateStartDate ? vm.task.estimateStartDate : undefined,
+                        vm.task.estimateEndDate ? vm.task.estimateEndDate : undefined]
                     vm.isLoading = false;
                 });
             },

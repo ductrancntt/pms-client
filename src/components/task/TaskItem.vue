@@ -27,7 +27,7 @@
                             <el-button type="danger" class="padding-0 priority-button margin-right-5"></el-button>
                         </el-tooltip>
                     </div>
-                    <div class="row flex align-bottom">
+                    <div class="row flex align-bottom" v-if="taskItem.status === 'IN_PROGRESS'">
                         <div v-if="taskItem.progress !== 0">
                             <el-tag size="mini">{{taskItem.progress}}%</el-tag>
                         </div>

@@ -23,8 +23,7 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <a style="font-weight: 500; color: #026AA7; cursor: pointer" class="item-link">{{comment.author.firstName}}
-                                    {{comment.author.lastName}}</a><br>
+                                <UsernameLink :user="comment.author" /><br>
                                 <span style="white-space: pre-wrap;">{{comment.content.trim()}}</span>
                             </div>
                         </div>
@@ -67,10 +66,11 @@
     import AuthService from "@/service/auth.service";
     import AttachmentUploader from "@/components/AttachmentUploader";
     import Attachment from "@/components/attachment/Attachment";
+    import UsernameLink from "@/components/UsernameLink";
 
     export default {
         name: "CommentItem",
-        components: {Attachment, AttachmentUploader, UserAvatar},
+        components: {UsernameLink, Attachment, AttachmentUploader, UserAvatar},
         props: {
             commentProps: {
                 type: Object,
@@ -159,10 +159,6 @@
 <style scoped>
     /deep/ .el-card__header {
         padding: 10px;
-    }
-
-    .item-link:hover {
-        text-decoration: underline;
     }
 
     /deep/ textarea {
