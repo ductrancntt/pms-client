@@ -20,6 +20,12 @@ let CategoryService = {
             JSON.stringify(payload)
         )
     },
+    updateList(payload) {
+        return request.put(
+            baseUrl + "/update-list",
+            JSON.stringify(payload)
+        )
+    },
     getByProject(payload){
         return request.get(
             baseUrl + "/get-by-project/" + payload,

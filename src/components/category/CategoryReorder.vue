@@ -6,11 +6,13 @@
                            @change="log($event, listCategory)"
                            class="list-group"
                            v-bind="dragOptions">
-                    <el-card :key="cat.id" shadow="never" v-for="cat in listCategory">
+                    <transition-group type="transition" name="flip-list">
+                    <el-card class="margin-bottom-10" style="background: #E7EAF0" :key="cat.id" shadow="never" v-for="cat in listCategory">
                         <div class="row">
-                            <div class="flex">{{cat.name}}</div>
+                            <div class="flex">{{cat.pos}} - {{cat.name}}</div>
                         </div>
                     </el-card>
+                    </transition-group>
                 </draggable>
             </div>
             <div class="text-center">
@@ -64,7 +66,9 @@
                 let newPos = update.newPos;
                 vm.$utils.setAttrs(vm, e.moved.element, {pos: newPos});
                 CategoryService.updatePos(e.moved.element).then(response => {
-                    // if (update.updateList) vm.updateListTask(listCategory);
+                    if (update.updateList) CategoryService.updateList(listCategory).then(response => {
+                        vm.loadData();
+                    })
                 }).catch(error => AlertService.error("Change order failed"));
             },
             getNewPos(idx, category) {
@@ -113,6 +117,13 @@
 
     .list-group-item {
 
+    }
+
+    .flip-list-move {
+        transition: transform 0.5s;
+    }
+    .no-move {
+        transition: transform 0s;
     }
 
     .ghost {
