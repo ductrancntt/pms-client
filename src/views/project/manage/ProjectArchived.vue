@@ -41,8 +41,12 @@
                                     <i class="el-icon-more"></i>
                                 </el-tag>
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item><i class="el-icon-edit"></i>Unarchive</el-dropdown-item>
-                                    <el-dropdown-item><i class="el-icon-s-delete"></i>Delete</el-dropdown-item>
+                                    <el-dropdown-item @click.native="unarchiveCategory(category.info.id)"><i
+                                            class="el-icon-collection-tag"></i>Unarchive
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click.native="deleteCategory(category.info.id)"><i
+                                            class="el-icon-delete"></i>Delete
+                                    </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
@@ -54,11 +58,11 @@
                                        :list="category.noProgress"
                                        class="list-group"
                                        v-bind="dragOptions">
-                                <TaskItem :is-manager="isManager"
+                                <TaskItem :is-archived="true"
+                                          :is-manager="isManager"
                                           :key="task.id"
                                           :project-id="projectId"
                                           :task="task"
-                                          :is-archived="true"
                                           class="list-group-item"
                                           v-for="task in category.noProgress"/>
                             </draggable>
@@ -78,11 +82,11 @@
                                        :list="category.inProgress"
                                        class="list-group"
                                        v-bind="dragOptions">
-                                <TaskItem :is-manager="isManager"
+                                <TaskItem :is-archived="true"
+                                          :is-manager="isManager"
                                           :key="task.id"
                                           :project-id="projectId"
                                           :task="task"
-                                          :is-archived="true"
                                           class="list-group-item"
                                           v-for="task in category.inProgress"/>
                             </draggable>
@@ -101,9 +105,9 @@
                                        :list="category.completed"
                                        class="list-group"
                                        v-bind="dragOptions">
-                                <TaskItem :is-manager="isManager"
+                                <TaskItem :is-archived="true"
+                                          :is-manager="isManager"
                                           :key="task.id"
-                                          :is-archived="true"
                                           :project-id="projectId"
                                           :task="task"
                                           class="list-group-item"
@@ -126,9 +130,9 @@
                                        :list="category.verified"
                                        class="list-group"
                                        v-bind="dragOptions">
-                                <TaskItem :is-manager="isManager"
+                                <TaskItem :is-archived="true"
+                                          :is-manager="isManager"
                                           :key="task.id"
-                                          :is-archived="true"
                                           :project-id="projectId"
                                           :task="task"
                                           class="list-group-item"
@@ -155,6 +159,7 @@
     import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
     import TaskDialog from "@/components/task/TaskDialog";
+    import CategoryService from "@/service/category.service";
 
     export default {
         name: "ProjectArchived",
@@ -189,6 +194,34 @@
             this.loadData();
         },
         methods: {
+            deleteCategory(id) {
+                let vm = this;
+                AlertService.confirm("Confirm delete category?", function () {
+                    CategoryService.delete(id)
+                        .then(() => {
+                            AlertService.success("Delete category successfully!");
+                            vm.loadData();
+                        })
+                        .catch(() => {
+                            AlertService.error("Delete category failed");
+                            vm.loadData();
+                        });
+                });
+            },
+            unarchiveCategory(id) {
+                let vm = this;
+                AlertService.confirm("Confirm unarchive category?", function () {
+                    CategoryService.unarchive(id)
+                        .then(() => {
+                            AlertService.success("Category unarchived successfully!");
+                            vm.loadData();
+                        })
+                        .catch(() => {
+                            AlertService.error("Category unarchived failed");
+                            vm.loadData();
+                        });
+                });
+            },
             toggleCategory(category) {
                 category.show = !category.show;
                 this.$set(category, 'show', category.show);

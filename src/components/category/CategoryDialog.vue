@@ -83,7 +83,7 @@
                         vm.isSaving = true;
                         vm.categoryForm.projectId = parseInt(this.projectId);
                         if (vm.categoryForm.id) {
-                            CategoryService.update(vm.categoryForm).then(onSuccess).catch(onError);
+                            CategoryService.updateName(vm.categoryForm).then(onSuccess).catch(onError);
                         } else {
                             CategoryService.create(vm.categoryForm).then(onSuccess).catch(onError);
                         }

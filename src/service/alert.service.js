@@ -48,6 +48,15 @@ let AlertService = {
         }).catch(() => {
 
         });
+    },
+    prompt(message, title, inputValue, callback){
+        MessageBox.prompt(message, title, {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            inputValue: inputValue ? inputValue : ''
+        }).then(({value}) => {
+            callback(value);
+        })
     }
 };
 export default AlertService;

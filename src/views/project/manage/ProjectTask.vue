@@ -9,6 +9,7 @@
             </div>
             <div>
                 <CategoryDialog :project-id="projectId" @categorySaved="loadData" v-if="isManager"/>
+                <CategoryReorder ref="categoryReorder" :project-id="projectId" @categorySaved="loadData" v-if="isManager"/>
             </div>
         </el-row>
         <table class="table">
@@ -52,14 +53,16 @@
                                     <i class="el-icon-more"></i>
                                 </el-tag>
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item><i class="el-icon-edit"></i>Edit</el-dropdown-item>
+                                    <el-dropdown-item @click.native="updateCategoryName(category.info)"><i
+                                            class="el-icon-edit"></i>Edit
+                                    </el-dropdown-item>
                                     <el-dropdown-item @click.native="archiveCategory(category.info.id)"><i
                                             class="el-icon-collection-tag"></i>Archive
                                     </el-dropdown-item>
                                     <el-dropdown-item @click.native="deleteCategory(category.info.id)"><i
                                             class="el-icon-delete"></i>Delete
                                     </el-dropdown-item>
-                                    <el-dropdown-item><i class="el-icon-s-order"></i>Reorder</el-dropdown-item>
+                                    <el-dropdown-item @click.native="reorderCategory"><i class="el-icon-s-order"></i>Reorder</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
@@ -185,10 +188,11 @@
     import TaskDialog from "@/components/task/TaskDialog";
     import TaskService from "@/service/task.service";
     import CategoryService from "@/service/category.service";
+    import CategoryReorder from "@/components/category/CategoryReorder";
 
     export default {
         name: "ProjectTask",
-        components: {TaskDialog, CategoryDialog, TaskItem, draggable},
+        components: {CategoryReorder, TaskDialog, CategoryDialog, TaskItem, draggable},
         props: {
             isManager: {
                 type: Boolean,
@@ -253,13 +257,32 @@
             },
             loadData() {
                 let vm = this;
-                vm.isLoading = false;
+                vm.isLoading = true;
                 ProjectService.getTask(vm.projectId).then(response => {
                     vm.isLoading = false;
                     vm.project = response;
                 }).catch(err => {
                     AlertService.error(err.message);
                 });
+            },
+            reorderCategory(){
+              let vm = this;
+              console.log("reorder")
+              vm.$refs.categoryReorder.show();
+            },
+            updateCategoryName(category) {
+                let vm = this;
+                let initValue = category.name;
+                AlertService.prompt("Input new category name", 'Edit', initValue, function (value) {
+                    let data = JSON.parse(JSON.stringify(category));
+                    data.name = value;
+                    CategoryService.updateName(data)
+                        .then(response => {
+                            AlertService.success("Update successfully");
+                            vm.loadData();
+                        })
+                        .catch(error => AlertService.error("Update failed"))
+                })
             },
             updateTask(task, cb) {
                 let vm = this;
@@ -337,11 +360,9 @@
     .list-group {
         height: 100%;
     }
-
     .list-group-item {
 
     }
-
     .ghost {
         font-size: 0;
         opacity: 1;
