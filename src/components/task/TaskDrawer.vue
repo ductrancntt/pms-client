@@ -8,7 +8,7 @@
             size="60%">
         <div slot="title" class="row v-center">
             <div class="flex">Task Detail</div>
-            <div class="row v-center padding-right-20" v-if="isManager">
+            <div class="row v-center padding-right-20" v-if="isManager && !isArchived">
                 <el-button size="mini" type="primary" v-if="editMode" @click="submit">
                     <el-icon name="circle-check"/>
                     Save
@@ -69,6 +69,7 @@
                             <td colspan="2">
                                 <span>Progress:</span>
                                 <el-slider
+                                        :disabled="isArchived"
                                         @change="updateProgress"
                                         v-model="task.progress"
                                         show-input>
@@ -91,12 +92,12 @@
 
                 <div id="comment-thread">
                     <el-divider content-position="left">Comment</el-divider>
-                    <Comment :task-id="task.id"/>
+                    <Comment :disabled="isArchived" :task-id="task.id"/>
                 </div>
 
                 <div id="activity" v-loading="isLoadingActivity">
                     <el-divider content-position="left">Activities</el-divider>
-                    <div v-for="act in activities" >
+                    <div v-for="act in activities" :key="act.id">
                         <Activity :key="act.id" :activity="act" />
                         <el-divider class="margin-10"/>
                     </div>
@@ -213,8 +214,13 @@
             taskId: Number,
             isManager: {
                 type: Boolean,
-                required: true
+                required: true,
+                default: false,
             },
+            isArchived: {
+                type: Boolean,
+                default: false,
+            }
         },
         data() {
             return {

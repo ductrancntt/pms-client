@@ -10,11 +10,10 @@
             </el-badge>
         </el-divider>
         <div class="row">
-            <div class="width-25" v-for="mem in listManager">
+            <div class="width-25" v-for="mem in listManager" :key="mem.user.id">
                 <div class="padding-10">
                     <MemberCard
                             @updateUserRole="loadData"
-                            :key="mem.user.id"
                             :user="mem.user"
                             :project-id="projectId"
                             :role="mem.role"
@@ -28,11 +27,10 @@
             </el-badge>
         </el-divider>
         <div class="row">
-            <div class="width-25" v-for="mem in listMember">
+            <div class="width-25" v-for="mem in listMember" :key="mem.user.id">
                 <div class="padding-10">
                     <MemberCard
                             @updateUserRole="loadData"
-                            :key="mem.user.id"
                             :user="mem.user"
                             :project-id="projectId"
                             :is-manager="isManager"

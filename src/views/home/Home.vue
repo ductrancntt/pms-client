@@ -1,14 +1,14 @@
 <template>
     <div class="column flex padding-20">
-        <el-row type="flex" justify="end" class="padding-bottom-20">
-            <el-button style="font-size: 14pt; padding: 10px 15px" type="primary" @click="createProject">
+        <el-row class="padding-bottom-20" justify="end" type="flex">
+            <el-button @click="createProject" style="font-size: 14pt; padding: 10px 15px" type="primary">
                 <el-icon name="circle-plus"></el-icon>
                 New Project
             </el-button>
         </el-row>
-        <el-row class="row flex padding-bottom-20" :gutter="20">
+        <el-row :gutter="20" class="row flex padding-bottom-20">
             <el-col :span="8" class="flex">
-                <el-card shadow="never" :body-style="cardStyle">
+                <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
                         <span>My Tasks</span>
                     </div>
@@ -18,7 +18,7 @@
                 </el-card>
             </el-col>
             <el-col :span="8" class="flex">
-                <el-card shadow="never" :body-style="cardStyle">
+                <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
                         <span>Notification</span>
                     </div>
@@ -28,13 +28,13 @@
                 </el-card>
             </el-col>
             <el-col :span="8" class="flex">
-                <el-card shadow="never" :body-style="cardStyle">
+                <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
                         <span>Project</span>
                     </div>
                     <div class="flex column">
                         <ul class="list">
-                            <li class="list-item" v-for="project in listProject" :key="project.id">
+                            <li :key="project.id" class="list-item" v-for="project in listProject">
                                 <el-link @click="goToProject(project)">{{project.name}}</el-link>
                             </li>
                         </ul>
@@ -45,10 +45,10 @@
 
         <el-row>
             <el-card shadow="never">
-                <FullCalendar defaultView="dayGridMonth" :plugins="calendarPlugins"/>
+                <FullCalendar :plugins="calendarPlugins" defaultView="dayGridMonth"/>
             </el-card>
         </el-row>
-        <ProjectDialog ref="projectDialog" @projectSaved="loadProject"/>
+        <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
     </div>
 </template>
 
@@ -56,7 +56,6 @@
     import ProjectDialog from "@/components/project/ProjectDialog";
     import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
-    import ProjectService from "@/service/project.service";
     import UserProjectService from "@/service/user-project.service";
     import AlertService from "@/service/alert.service";
 

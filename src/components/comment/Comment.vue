@@ -3,7 +3,7 @@
         <div id="comment-body" class="column padding-bottom-20">
             <div class="row">
                 <div class="flex">
-                    <el-input type="textarea" v-model="comment.content"
+                    <el-input :disabled="disabled" type="textarea" v-model="comment.content"
                               placeholder="Type your comment here"
                               rows="2"></el-input>
                     <div class="padding-top-10">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div style="width: 100px;" class="padding-left-10">
-                    <AttachmentUploader style="width: 100%" ref="attachmentUploader" text="Attach file"/>
+                    <AttachmentUploader :disabled="disabled" style="width: 100%" ref="attachmentUploader" text="Attach file"/>
                 </div>
             </div>
             <div>
@@ -22,6 +22,7 @@
         </div>
         <div id="comment-logs">
             <CommentItem class="padding-bottom-10" v-for="item in listComment"
+                         :disabled="disabled"
                          :key="item.id"
                          :comment-props="item"
                          :task-id="taskId"
@@ -46,6 +47,10 @@
             taskId: {
                 type: Number,
                 required: true,
+            },
+            disabled: {
+                type: Boolean,
+                default: false,
             }
         },
         data() {

@@ -13,11 +13,27 @@ let AttachmentService = {
             }
         )
     },
+    upload(payload) {
+        return request.post(
+            baseUrl + "/project/upload",
+            payload,
+            {
+                headers: {
+                    'Content-Type': undefined
+                }
+            }
+        )
+    },
     getByProjectId(payload) {
         return request.get(
             baseUrl + '/project/' + payload
         )
-    }
+    },
+    delete(payload) {
+        return request.delete(
+            baseUrl + "/delete/" + payload
+        )
+    },
 };
 
 export default AttachmentService;

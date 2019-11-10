@@ -1,6 +1,6 @@
 <template>
-    <el-tag style="cursor: pointer" @click="" :size="size">
-        <el-icon name="paperclip"/>
+    <el-tag style="cursor: pointer" @click="download" :size="size">
+        <el-icon name="paperclip"/>&nbsp;
         <a :href="attachment.url" download>{{attachment.name}}</a>
         <el-icon v-if="removable" @click.native="remove(attachment)" style="font-size: 12pt; padding: 0 0 0 8px"
                  name="close"/>
@@ -26,6 +26,9 @@
             onClose: Function
         },
         methods: {
+            download(){
+
+            },
             remove(att) {
                 this.onClose(att);
             }

@@ -1,14 +1,14 @@
 <template>
-    <div id="kanban" v-loading="isLoading" style="overflow-y: hidden">
-        <el-row type="flex" justify="space-between" class="padding-10">
+    <div id="kanban" style="overflow-y: hidden" v-loading="isLoading">
+        <el-row class="padding-10" justify="space-between" type="flex">
             <div>
-                <el-button type="text" @click="$router.push({name: 'home'})">
+                <el-button @click="$router.push({name: 'home'})" type="text">
                     <el-icon name="arrow-left"></el-icon>
                     Back
                 </el-button>
             </div>
             <div>
-                <CategoryDialog v-if="isManager" :project-id="projectId" @categorySaved="loadData"/>
+                <CategoryDialog :project-id="projectId" @categorySaved="loadData" v-if="isManager"/>
             </div>
         </el-row>
         <table class="table">
@@ -31,15 +31,15 @@
             </th>
             </thead>
             <tbody>
-            <tr class="table-row" v-for="category in project.categories" :key="category.info.id">
+            <tr :key="category.info.id" class="table-row" v-for="category in project.categories">
                 <!--NO_PROGRESS-->
                 <td class="table-cell">
                     <div class="category-title">
                         <transition name="el-fade-in-linear">
-                            <el-tag style="cursor: pointer" v-if="category.show" @click="toggleCategory(category)">
+                            <el-tag @click="toggleCategory(category)" style="cursor: pointer" v-if="category.show">
                                 <i class="el-icon-arrow-down"></i>
                             </el-tag>
-                            <el-tag style="cursor: pointer" v-else @click="toggleCategory(category)">
+                            <el-tag @click="toggleCategory(category)" style="cursor: pointer" v-else>
                                 <i class="el-icon-arrow-right"></i>
                             </el-tag>
                         </transition>
@@ -66,21 +66,21 @@
                     </div>
 
                     <el-collapse-transition>
-                        <div v-show="category.show" class="list-group">
-                            <draggable class="list-group"
-                                       :list="category.noProgress"
-                                       v-bind="dragOptions"
-                                       @change="log($event, category.noProgress, category.info.id, 'NO_PROGRESS')">
+                        <div class="list-group" v-show="category.show">
+                            <draggable :list="category.noProgress"
+                                       @change="log($event, category.noProgress, category.info.id, 'NO_PROGRESS')"
+                                       class="list-group"
+                                       v-bind="dragOptions">
                                 <TaskItem :is-manager="isManager"
-                                          class="list-group-item"
-                                          :project-id="projectId"
-                                          v-for="task in category.noProgress"
                                           :key="task.id"
-                                          @taskDeleted="loadData"
+                                          :project-id="projectId"
+                                          :task="task"
                                           @taskChange="taskChange($event, task)"
-                                          :task="task"/>
+                                          @taskDeleted="loadData"
+                                          class="list-group-item"
+                                          v-for="task in category.noProgress"/>
                                 <div class="padding-5" slot="footer" v-if="isManager">
-                                    <TaskDialog is-popover @taskSaved="loadData" :category-id="category.info.id"/>
+                                    <TaskDialog :category-id="category.info.id" @taskSaved="loadData" is-popover/>
                                 </div>
                             </draggable>
                         </div>
@@ -94,19 +94,19 @@
                         <span>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show" class="list-group">
-                            <draggable class="list-group"
-                                       :list="category.inProgress"
-                                       v-bind="dragOptions"
-                                       @change="log($event, category.inProgress, category.info.id, 'IN_PROGRESS')">
+                        <div class="list-group" v-show="category.show">
+                            <draggable :list="category.inProgress"
+                                       @change="log($event, category.inProgress, category.info.id, 'IN_PROGRESS')"
+                                       class="list-group"
+                                       v-bind="dragOptions">
                                 <TaskItem :is-manager="isManager"
-                                          class="list-group-item"
-                                          :project-id="projectId"
-                                          v-for="task in category.inProgress"
                                           :key="task.id"
-                                          @taskDeleted="loadData"
+                                          :project-id="projectId"
+                                          :task="task"
                                           @taskChange="taskChange($event, task)"
-                                          :task="task"/>
+                                          @taskDeleted="loadData"
+                                          class="list-group-item"
+                                          v-for="task in category.inProgress"/>
                             </draggable>
                         </div>
                     </el-collapse-transition>
@@ -118,53 +118,53 @@
                         <span>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show" class="list-group">
-                            <draggable class="list-group"
-                                       :list="category.completed"
-                                       v-bind="dragOptions"
-                                       @change="log($event, category.completed, category.info.id, 'COMPLETED')">
+                        <div class="list-group" v-show="category.show">
+                            <draggable :list="category.completed"
+                                       @change="log($event, category.completed, category.info.id, 'COMPLETED')"
+                                       class="list-group"
+                                       v-bind="dragOptions">
                                 <TaskItem :is-manager="isManager"
-                                          class="list-group-item"
-                                          :project-id="projectId"
-                                          v-for="task in category.completed"
                                           :key="task.id"
+                                          :project-id="projectId"
+                                          :task="task"
                                           @taskChange="taskChange($event, task)"
                                           @taskDeleted="loadData"
-                                          :task="task"/>
+                                          class="list-group-item"
+                                          v-for="task in category.completed"/>
                             </draggable>
                         </div>
                     </el-collapse-transition>
                 </td>
 
                 <!--VERIFIED-->
-                <td class="table-cell" :class="isManager?'':'bg-info disable-cursor'">
+                <td :class="isManager?'':'bg-info disable-cursor'" class="table-cell">
                     <div class="category-title">
-                        <el-tag v-if="!isManager" type="danger" class="width-100 text-center">Manager Only
+                        <el-tag class="width-100 text-center" type="danger" v-if="!isManager">Manager Only
                         </el-tag>
                         <span v-else>&nbsp;</span>
                     </div>
                     <el-collapse-transition>
-                        <div v-show="category.show" class="list-group">
-                            <draggable class="list-group"
+                        <div class="list-group" v-show="category.show">
+                            <draggable :disabled="!isManager"
                                        :list="category.verified"
-                                       v-bind="dragOptions"
-                                       :disabled="!isManager"
-                                       @change="log($event, category.verified, category.info.id, 'VERIFIED')">
+                                       @change="log($event, category.verified, category.info.id, 'VERIFIED')"
+                                       class="list-group"
+                                       v-bind="dragOptions">
                                 <TaskItem :is-manager="isManager"
-                                          :project-id="projectId"
-                                          class="list-group-item"
-                                          v-for="task in category.verified"
                                           :key="task.id"
-                                          @taskDeleted="loadData"
+                                          :project-id="projectId"
+                                          :task="task"
                                           @taskChange="taskChange($event, task)"
-                                          :task="task"/>
+                                          @taskDeleted="loadData"
+                                          class="list-group-item"
+                                          v-for="task in category.verified"/>
                             </draggable>
                         </div>
                     </el-collapse-transition>
                 </td>
             </tr>
             <tr>
-                <td colspan="4" class="text-center">
+                <td class="text-center" colspan="4">
                     <el-divider v-if="isManager">
                         <CategoryDialog :project-id="projectId" @categorySaved="loadData"/>
                     </el-divider>

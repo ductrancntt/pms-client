@@ -52,7 +52,7 @@
                 </div>
             </div>
         </el-card>
-        <TaskDrawer :project-id="projectId" :task-id="task.id" :is-manager="isManager" @taskUpdated="updateTask"
+        <TaskDrawer :is-archived="isArchived" :project-id="projectId" :task-id="task.id" :is-manager="isManager" @taskUpdated="updateTask"
                     @deleteTask="deleteTask"
                     ref="drawer"/>
     </div>
@@ -75,6 +75,10 @@
             task: {
                 type: Object,
                 required: true
+            },
+            isArchived: {
+                type: Boolean,
+                default: false,
             }
         },
         computed: {

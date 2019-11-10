@@ -1,13 +1,115 @@
 <template>
-    <p>ProjectResource</p>
+    <div class="row flex padding-10">
+        <div class="flex padding-right-10">
+            <el-card shadow="never">
+                <div class="column" style="min-height: 150px;">
+                    <div class="flex">
+                        <AttachmentUploader ref="attachmentUploader" size="large" text="Select files" type="info"/>
+                    </div>
+                    <el-divider></el-divider>
+                    <div>
+                        <el-button @click="submit" type="primary">Upload</el-button>
+                        <el-button @click="clearFiles">Clear</el-button>
+                    </div>
+                </div>
+            </el-card>
+        </div>
+        <div class="flex-2">
+            <div style="min-height: 150px;">
+                <el-alert
+                        :closable="false"
+                        description="No attachment"
+                        show-icon
+                        title="Empty!"
+                        type="info"
+                        v-if="listAttachments.length <= 0">
+                </el-alert>
+                <div v-else>
+                    <el-card class="margin-bottom-10" :key="att.id" shadow="never" v-for="att in listAttachments">
+                        <div class="row align-center">
+                            <div class="column flex">
+                                        <span class="flex" style="font-weight: 500">
+                                            <Attachment :attachment="att" size="medium"/>
+                                        </span>
+                                <span class="padding-right-10 padding-top-10"
+                                      style="font-style: italic; font-size: 10pt">
+                                            <span>
+                                                Uploaded by
+                                            <UsernameLink :user="att.createdBy"/> at
+                                            </span>
+                                            <span><el-tag size="mini" type="info">{{att.createdDate | moment("HH:mm DD/MM/YYYY")}}</el-tag></span>
+                                        </span>
+                            </div>
+                            <el-button icon="el-icon-delete" size="small"
+                                       v-if="currentUser.id === att.createdBy.id">Delete
+                            </el-button>
+                        </div>
+                    </el-card>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
+    import AttachmentUploader from "@/components/AttachmentUploader";
+    import AttachmentService from "@/service/attachment.service";
+    import AlertService from "@/service/alert.service";
+    import UsernameLink from "@/components/UsernameLink";
+    import Attachment from "@/components/attachment/Attachment";
+    import AuthService from "@/service/auth.service";
+
     export default {
-        name: "ProjectResource"
+        name: "ProjectResource",
+        components: {Attachment, UsernameLink, AttachmentUploader},
+        props: {
+            projectId: Number,
+            isManager: Boolean
+        },
+        data() {
+            return {
+                listAttachments: [],
+                currentUser: {},
+            }
+        },
+        created() {
+            this.loadData();
+            this.currentUser = AuthService.getCurrentUser();
+        },
+        methods: {
+            submit() {
+                let vm = this;
+                let params = new FormData();
+                params.append("projectId", new Blob([JSON.stringify(vm.projectId)], {type: 'application/json'}));
+                let selectedFiles = vm.$refs.attachmentUploader.getUploadFiles();
+                if (selectedFiles.length <= 0) return;
+                selectedFiles.forEach(file => {
+                    params.append("files", file.raw);
+                });
+                AttachmentService.upload(params).then(response => {
+                    AlertService.success("Upload successfully");
+                    vm.clearFiles();
+                    vm.loadData();
+                }).catch(error => {
+                    AlertService.error("Upload failed");
+                })
+            },
+            clearFiles() {
+                let vm = this;
+                vm.$refs.attachmentUploader.clearFiles();
+            },
+            loadData() {
+                let vm = this;
+                AttachmentService.getByProjectId(vm.projectId).then(response => {
+                    vm.listAttachments = response;
+                })
+            }
+        }
     }
 </script>
 
 <style scoped>
-
+    /deep/ .el-divider__text {
+        background-color: transparent !important;
+    }
 </style>

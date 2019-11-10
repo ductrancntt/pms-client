@@ -69,12 +69,12 @@
                         label: "Archived",
                         managerOnly: false,
                     },
-                    {
-                        routeName: "projectManager",
-                        icon: 'el-icon-s-operation',
-                        label: "Manager",
-                        managerOnly: true,
-                    },
+                    // {
+                    //     routeName: "projectManager",
+                    //     icon: 'el-icon-s-operation',
+                    //     label: "Manager",
+                    //     managerOnly: true,
+                    // },
                     {
                         routeName: "projectStatistic",
                         icon: 'el-icon-s-data',

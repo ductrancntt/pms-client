@@ -7,27 +7,28 @@
             <div class="column flex padding-left-10">
                 <div class="column" style="background: #F2F3F5; border-radius: 18px; padding: 8px 10px">
                     <div class="row">
-                        <div id="content" class="flex">
-                            <div v-if="editMode" class="padding-bottom-5 column">
+                        <div class="flex" id="content">
+                            <div class="padding-bottom-5 column" v-if="editMode">
                                 <div>
-                                    <el-input rows="2" v-model="comment.content" type="textarea"/>
+                                    <el-input rows="2" type="textarea" v-model="comment.content"/>
                                 </div>
                                 <div class="row flex padding-top-10" style="justify-content: flex-end">
                                     <div class="flex">
                                         <AttachmentUploader ref="attachmentUploader" text="Attach file"/>
                                     </div>
                                     <div>
-                                        <el-button type="primary" size="mini" @click="updateComment">Save</el-button>
-                                        <el-button type="info" size="mini" @click="cancel">Cancel</el-button>
+                                        <el-button @click="updateComment" size="mini" type="primary">Save</el-button>
+                                        <el-button @click="cancel" size="mini" type="info">Cancel</el-button>
                                     </div>
                                 </div>
                             </div>
                             <div v-else>
-                                <UsernameLink :user="comment.author" /><br>
+                                <UsernameLink :user="comment.author"/>
+                                <br>
                                 <span style="white-space: pre-wrap;">{{comment.content.trim()}}</span>
                             </div>
                         </div>
-                        <div id="action" v-if="!editMode && hasRight">
+                        <div id="action" v-if="!editMode && hasRight && !disabled">
                             <el-dropdown trigger="click">
                                 <el-button type="text">
                                     <el-icon name="more"/>
@@ -44,15 +45,15 @@
                         </div>
                     </div>
                     <div class="row" style="justify-content: flex-end">
-                        <Attachment v-for="att in comment.attachments" :key="att.id" class="margin-left-5"
+                        <Attachment :attachment="att" :key="att.id" :on-close="removeAttachment"
                                     :removable="editMode"
-                                    :on-close="removeAttachment"
-                                    :attachment="att"/>
+                                    class="margin-left-5"
+                                    v-for="att in comment.attachments"/>
                     </div>
                 </div>
                 <div class="row padding-top-5" style="justify-content: flex-end">
-                    <el-tag class="margin-right-5" v-if="comment.edited" type="info" size="mini">Edited</el-tag>
-                    <el-tag type="info" size="mini">{{comment.createdDate | moment('HH:mm - DD/MM/YYYY')}}</el-tag>
+                    <el-tag class="margin-right-5" size="mini" type="info" v-if="comment.edited">Edited</el-tag>
+                    <el-tag size="mini" type="info">{{comment.createdDate | moment('HH:mm - DD/MM/YYYY')}}</el-tag>
                 </div>
             </div>
         </div>
@@ -79,6 +80,10 @@
             taskId: {
                 type: Number,
                 required: true,
+            },
+            disabled: {
+                type: Boolean,
+                default: false,
             }
         },
         computed: {

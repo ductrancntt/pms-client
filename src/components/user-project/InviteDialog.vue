@@ -1,9 +1,9 @@
 <template>
     <div>
         <el-dialog title="Invite Dialog" width="30%" :visible.sync="dialogVisible">
-            <el-form ref="inviteForm" :model="inviteForm">
+            <el-form onSubmit="return false;" ref="inviteForm" :model="inviteForm">
                 <el-form-item label="Email">
-                    <el-input v-model="inputText">
+                    <el-input autofocus v-model="inputText">
                         <el-button slot="append"
                                    icon="el-icon-circle-plus-outline"
                                    :disabled="!inputText"

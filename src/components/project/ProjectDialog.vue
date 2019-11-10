@@ -3,7 +3,7 @@
         <el-dialog title="Project Dialog" width="30%" :visible.sync="dialogVisible">
             <el-form ref="projectForm" :model="projectForm">
                 <el-form-item prop="name" label="Name">
-                    <el-input v-model="projectForm.name"></el-input>
+                    <el-input autofocus v-model="projectForm.name"></el-input>
                 </el-form-item>
                 <el-form-item prop="description" label="Description">
                     <el-input type="textarea" :rows="5" v-model="projectForm.description"></el-input>
