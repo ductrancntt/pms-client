@@ -26,7 +26,7 @@
                 <i class="el-icon-circle-check text-success"></i>
                 COMPLETED
             </th>
-            <th class="title-cell">
+            <th v-if="project.info.verifyTask" class="title-cell">
                 <i class="el-icon-success text-success"></i>
                 VERIFIED
             </th>
@@ -140,7 +140,7 @@
                 </td>
 
                 <!--VERIFIED-->
-                <td :class="isManager?'':'bg-info disable-cursor'" class="table-cell">
+                <td  v-if="project.info.verifyTask" :class="isManager?'':'bg-info disable-cursor'" class="table-cell">
                     <div class="category-title">
                         <el-tag class="width-100 text-center" type="danger" v-if="!isManager">Manager Only
                         </el-tag>
@@ -167,7 +167,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="text-center" colspan="4">
+                <td class="text-center" :colspan="project.info.verifyTask ? 4 : 3">
                     <el-divider v-if="isManager">
                         <CategoryDialog :project-id="projectId" @categorySaved="loadData"/>
                     </el-divider>

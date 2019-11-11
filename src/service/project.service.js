@@ -39,9 +39,19 @@ let ProjectService = {
             baseUrl + "/delete/" + payload
         )
     },
-    checkProjectAdmin(payload){
+    checkProjectAdmin(payload) {
         return request.get(
             baseUrl + "/check-project-admin/" + payload
+        )
+    },
+    turnOnVerification(payload) {
+        return request.put(baseUrl + "/turn-on-verification/",
+            JSON.stringify(payload)
+        )
+    },
+    turnOffVerification(payload) {
+        return request.put(baseUrl + "/turn-off-verification/",
+            JSON.stringify(payload)
         )
     }
 };

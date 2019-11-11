@@ -6,12 +6,13 @@
                            @change="log($event, listCategory)"
                            class="list-group"
                            v-bind="dragOptions">
-                    <transition-group type="transition" name="flip-list">
-                    <el-card class="margin-bottom-10" style="background: #E7EAF0" :key="cat.id" shadow="never" v-for="cat in listCategory">
-                        <div class="row">
-                            <div class="flex">{{cat.pos}} - {{cat.name}}</div>
-                        </div>
-                    </el-card>
+                    <transition-group name="flip-list" type="transition">
+                        <el-card :key="cat.id" class="margin-bottom-10" shadow="never" style="background: #E7EAF0"
+                                 v-for="cat in listCategory">
+                            <div class="row">
+                                <div class="flex">{{cat.pos}} - {{cat.name}}</div>
+                            </div>
+                        </el-card>
                     </transition-group>
                 </draggable>
             </div>
@@ -122,6 +123,7 @@
     .flip-list-move {
         transition: transform 0.5s;
     }
+
     .no-move {
         transition: transform 0s;
     }
