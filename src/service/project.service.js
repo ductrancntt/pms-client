@@ -14,13 +14,15 @@ let ProjectService = {
         )
     },
     getTask(payload) {
-        return request.get(
-            baseUrl + "/get-task/" + payload,
+        return request.post(
+            baseUrl + "/get-task",
+            JSON.stringify(payload)
         )
     },
     getTaskArchived(payload) {
-        return request.get(
-            baseUrl + "/get-task/archived/" + payload,
+        return request.post(
+            baseUrl + "/get-task/archived",
+            JSON.stringify(payload)
         )
     },
     get(payload) {

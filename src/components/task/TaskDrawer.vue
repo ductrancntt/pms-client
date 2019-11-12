@@ -1,39 +1,39 @@
 <template>
     <el-drawer
-            ref="drawer"
+            :before-close="hide"
             :destroy-on-close="true"
             :visible.sync="visible"
             direction="rtl"
-            :before-close="hide"
+            ref="drawer"
             size="60%">
-        <div slot="title" class="row v-center">
+        <div class="row v-center" slot="title">
             <div class="flex">Task Detail</div>
             <div class="row v-center padding-right-20" v-if="isManager && !isArchived">
-                <el-button size="mini" type="primary" v-if="editMode" @click="submit">
+                <el-button @click="submit" size="mini" type="primary" v-if="editMode">
                     <el-icon name="circle-check"/>
                     Save
                 </el-button>
-                <el-button plain size="mini" type="danger" v-if="!editMode" @click="deleteTask">
+                <el-button @click="deleteTask" plain size="mini" type="danger" v-if="!editMode">
                     <el-icon name="delete"/>
                     Delete
                 </el-button>
-                <el-button size="mini" @click="toggleEditMode">
+                <el-button @click="toggleEditMode" size="mini">
                     <span v-if="editMode"><el-icon name="circle-close"/> Cancel</span>
                     <span v-else><el-icon name="edit"/> Edit</span>
                 </el-button>
             </div>
         </div>
-        <div v-if="task.id" class="padding-20 height-100" v-loading="isLoading">
-            <div v-if="!editMode" class="column">
-                <div id="basic" class="row">
+        <div class="padding-20 height-100" v-if="task.id" v-loading="isLoading">
+            <div class="column" v-if="!editMode">
+                <div class="row" id="basic">
                     <table class="table">
                         <tr>
                             <td colspan="2">Name: <span style="font-weight: 500">{{task.name}}</span></td>
                         </tr>
                         <tr>
                             <td>Created by:
-                                <a style="font-weight: 500; color: #026AA7; cursor: pointer"
-                                   class="item-link">{{task.creator.firstName}} {{task.creator.lastName}}</a>
+                                <a class="item-link"
+                                   style="font-weight: 500; color: #026AA7; cursor: pointer">{{task.creator.firstName}} {{task.creator.lastName}}</a>
                             </td>
                             <td>Start/Due Date:
                                 <span v-if="task.estimateStartDate || task.estimateEndDate">
@@ -42,7 +42,7 @@
                                     <span v-if="task.estimateEndDate">{{task.estimateEndDate | moment("DD/MMM")}}</span>
                                 </span>
                                 <span v-else>
-                                    <el-tag type="info" size="mini">Not set</el-tag>
+                                    <el-tag size="mini" type="info">Not set</el-tag>
                                 </span>
                             </td>
                         </tr>
@@ -58,9 +58,9 @@
                             <td>
                                 <div class="row v-center">
                                     <span>Assigned to:&nbsp;</span>
-                                    <div v-for="user in task.assignedUsers" :key="user.id"
-                                         style="align-items: flex-end">
-                                        <UserAvatar style="padding-right: 3px" :size="25" shape="circle" :user="user"/>
+                                    <div :key="user.id" style="align-items: flex-end"
+                                         v-for="user in task.assignedUsers">
+                                        <UserAvatar :size="25" :user="user" shape="circle" style="padding-right: 3px"/>
                                     </div>
                                 </div>
                             </td>
@@ -71,8 +71,8 @@
                                 <el-slider
                                         :disabled="isArchived"
                                         @change="updateProgress"
-                                        v-model="task.progress"
-                                        show-input>
+                                        show-input
+                                        v-model="task.progress">
                                 </el-slider>
                             </td>
                         </tr>
@@ -86,8 +86,8 @@
                 </div>
                 <div id="attachment" v-if="task.attachments && task.attachments.length > 0">
                     <el-divider content-position="left">Attachment</el-divider>
-                    <Attachment v-for="att in task.attachments" :key="att.id" class="margin-left-5"
-                                :attachment="att"/>
+                    <Attachment :attachment="att" :key="att.id" class="margin-left-5"
+                                v-for="att in task.attachments"/>
                 </div>
 
                 <div id="comment-thread">
@@ -97,8 +97,8 @@
 
                 <div id="activity" v-loading="isLoadingActivity">
                     <el-divider content-position="left">Activities</el-divider>
-                    <div v-for="act in activities" :key="act.id">
-                        <Activity :key="act.id" :activity="act" />
+                    <div :key="act.id" v-for="act in activities">
+                        <Activity :activity="act" :key="act.id"/>
                         <el-divider class="margin-10"/>
                     </div>
 
@@ -117,13 +117,13 @@
                         <el-col :span="11">
                             <el-form-item>
                                 <InputLabel label="Priority"/>
-                                <el-select class="width-100" default-first-option v-model="task.priority"
-                                           placeholder="Select">
+                                <el-select class="width-100" default-first-option placeholder="Select"
+                                           v-model="task.priority">
                                     <el-option
-                                            v-for="item in taskPriority"
                                             :key="item.value"
                                             :label="item.label"
-                                            :value="item.value">
+                                            :value="item.value"
+                                            v-for="item in taskPriority">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -133,15 +133,15 @@
                         <el-col :span="11">
                             <el-form-item>
                                 <InputLabel label="Assign To"/>
-                                <el-select multiple
-                                           class="width-100"
-                                           v-model="task.assignUserIds"
-                                           placeholder="Select users">
+                                <el-select class="width-100"
+                                           multiple
+                                           placeholder="Select users"
+                                           v-model="task.assignUserIds">
                                     <el-option
-                                            v-for="item in task.unassignedUsers"
                                             :key="item.id"
                                             :label="item.firstName + ' ' + item.lastName"
-                                            :value="item.id">
+                                            :value="item.id"
+                                            v-for="item in task.unassignedUsers">
                                         <span style="float: left"><UserAvatar :user="item"/></span>
                                         <span class="padding-left-10" style="font-size: 13px">
                                     {{item.firstName}} {{item.lastName}}
@@ -155,12 +155,12 @@
                             <el-form-item>
                                 <InputLabel label="Estimate"/>
                                 <el-date-picker
-                                        v-model="dateRange"
+                                        end-placeholder="End date"
                                         format="dd/MM/yyyy"
-                                        type="daterange"
                                         range-separator="To"
                                         start-placeholder="Start date"
-                                        end-placeholder="End date">
+                                        type="daterange"
+                                        v-model="dateRange">
                                 </el-date-picker>
                             </el-form-item>
                         </el-col>
@@ -169,8 +169,9 @@
                         <el-form-item>
                             <InputLabel label="Members in Task (Click avatar to remove)"/>
                             <div class="row">
-                                <div v-for="user in task.assignedUsers" :key="user.id" style="align-items: flex-end">
-                                    <UserAvatar @click.native="removeUser(user)" style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
+                                <div :key="user.id" style="align-items: flex-end" v-for="user in task.assignedUsers">
+                                    <UserAvatar :size="25" :user="user" @click.native="removeUser(user)"
+                                                shape="circle" style="padding-left: 3px"/>
                                 </div>
                             </div>
                         </el-form-item>
@@ -181,11 +182,11 @@
                     </el-form-item>
                     <el-form-item>
                         <InputLabel label="Attachment"/>
-                        <Attachment v-for="att in task.attachments" :key="att.id" class="margin-left-5"
+                        <Attachment :attachment="att" :key="att.id" :on-close="removeAttachment"
                                     :removable="editMode"
-                                    :on-close="removeAttachment"
-                                    :attachment="att"/>
-                        <AttachmentUploader style="width: 100%" ref="attachmentUploader" text="Attach file"/>
+                                    class="margin-left-5"
+                                    v-for="att in task.attachments"/>
+                        <AttachmentUploader ref="attachmentUploader" style="width: 100%" text="Attach file"/>
                     </el-form-item>
                 </el-form>
             </div>
@@ -266,7 +267,7 @@
             }
         },
         methods: {
-            removeUser(user){
+            removeUser(user) {
                 console.log(user);
                 if (!this.task.removeAssignUserIds) this.task.removeAssignUserIds = [];
                 this.task.removeAssignUserIds.push(user.id);
@@ -310,8 +311,12 @@
             show() {
                 let vm = this;
                 vm.visible = true;
+                vm.isLoading = true;
                 vm.loadTaskContent();
-                vm.loadTaskActivities();
+
+                setTimeout(function () {
+                    vm.loadTaskActivities();
+                },400);
             },
             hide(done) {
                 this.visible = false;

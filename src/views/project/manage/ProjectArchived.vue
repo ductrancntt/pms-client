@@ -229,7 +229,9 @@
             loadData() {
                 let vm = this;
                 vm.isLoading = false;
-                ProjectService.getTaskArchived(vm.projectId).then(response => {
+                ProjectService.getTaskArchived({
+                    projectId: vm.projectId
+                }).then(response => {
                     vm.isLoading = false;
                     vm.project = response;
                 }).catch(err => {

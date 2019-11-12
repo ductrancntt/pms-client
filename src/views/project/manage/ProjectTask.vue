@@ -1,18 +1,66 @@
 <template>
     <div id="kanban" style="overflow-y: hidden" v-loading="isLoading">
-        <el-row class="padding-10" justify="space-between" type="flex">
-            <div>
-                <el-button @click="$router.push({name: 'home'})" type="text">
-                    <el-icon name="arrow-left"></el-icon>
-                    Back
-                </el-button>
+        <div class="padding-10 row flex">
+            <div class="row flex v-center">
+                <el-row :gutter="10">
+                    <el-col :span="4">
+                        <el-select collapse-tags
+                                   multiple
+                                   placeholder="Priority"
+                                   v-model="filter.priorities">
+                            <el-option
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                    v-for="item in taskPriority">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-select collapse-tags
+                                   multiple
+                                   placeholder="User"
+                                   v-model="filter.userIds">
+                            <el-option
+                                    :key="item.user.id"
+                                    :label="item.user.firstName + ' ' + item.user.lastName"
+                                    :value="item.user.id"
+                                    v-for="item in projectUsers">
+                                <span style="float: left"><UserAvatar :user="item.user"/></span>
+                                <span class="padding-left-10" style="font-size: 13px">
+                                    {{item.user.firstName}} {{item.user.lastName}}
+                                </span>
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-input placeholder="Keyword" v-model="filter.searchText"></el-input>
+                    </el-col>
+                    <el-col :span="4">
+                        <div>
+                            <el-date-picker
+                                    placeholder="Start Date"
+                                    v-model="filter.startDate">
+
+                            </el-date-picker>
+                        </div>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-date-picker
+                                placeholder="End Date"
+                                v-model="filter.endDate">
+
+                        </el-date-picker>
+                    </el-col>
+
+                    <el-col :span="4" class="text-right">
+                        <el-button @click="search" icon="el-icon-search">Search</el-button>
+                        <el-button @click="reset" icon="el-icon-refresh-right"></el-button>
+                    </el-col>
+                </el-row>
             </div>
-            <div>
-                <CategoryDialog :project-id="projectId" @categorySaved="loadData" v-if="isManager"/>
-                <CategoryReorder ref="categoryReorder" :project-id="projectId" @categorySaved="loadData" v-if="isManager"/>
-            </div>
-        </el-row>
-        <table class="table">
+        </div>
+        <table class="table" v-if="project">
             <thead>
             <th class="title-cell">
                 <i class="el-icon-circle-check"></i>
@@ -26,7 +74,7 @@
                 <i class="el-icon-circle-check text-success"></i>
                 COMPLETED
             </th>
-            <th v-if="project.info.verifyTask" class="title-cell">
+            <th class="title-cell" v-if="project.info.verifyTask">
                 <i class="el-icon-success text-success"></i>
                 VERIFIED
             </th>
@@ -62,7 +110,8 @@
                                     <el-dropdown-item @click.native="deleteCategory(category.info.id)"><i
                                             class="el-icon-delete"></i>Delete
                                     </el-dropdown-item>
-                                    <el-dropdown-item @click.native="reorderCategory"><i class="el-icon-s-order"></i>Reorder</el-dropdown-item>
+                                    <el-dropdown-item @click.native="reorderCategory"><i class="el-icon-s-order"></i>Reorder
+                                    </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </div>
@@ -140,7 +189,7 @@
                 </td>
 
                 <!--VERIFIED-->
-                <td  v-if="project.info.verifyTask" :class="isManager?'':'bg-info disable-cursor'" class="table-cell">
+                <td :class="isManager?'':'bg-info disable-cursor'" class="table-cell" v-if="project.info.verifyTask">
                     <div class="category-title">
                         <el-tag class="width-100 text-center" type="danger" v-if="!isManager">Manager Only
                         </el-tag>
@@ -167,7 +216,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="text-center" :colspan="project.info.verifyTask ? 4 : 3">
+                <td :colspan="project.info.verifyTask ? 4 : 3" class="text-center">
                     <el-divider v-if="isManager">
                         <CategoryDialog :project-id="projectId" @categorySaved="loadData"/>
                     </el-divider>
@@ -176,6 +225,8 @@
             </tr>
             </tbody>
         </table>
+        <CategoryReorder :project-id="projectId" @categorySaved="loadData" ref="categoryReorder"
+                         v-if="isManager"/>
     </div>
 </template>
 
@@ -189,10 +240,12 @@
     import TaskService from "@/service/task.service";
     import CategoryService from "@/service/category.service";
     import CategoryReorder from "@/components/category/CategoryReorder";
+    import UserProjectService from "@/service/user-project.service";
+    import UserAvatar from "@/components/UserAvatar";
 
     export default {
         name: "ProjectTask",
-        components: {CategoryReorder, TaskDialog, CategoryDialog, TaskItem, draggable},
+        components: {UserAvatar, CategoryReorder, TaskDialog, CategoryDialog, TaskItem, draggable},
         props: {
             isManager: {
                 type: Boolean,
@@ -216,13 +269,44 @@
         data() {
             return {
                 isLoading: true,
-                project: {},
+                project: null,
+                filter: {
+                    priorities: [],
+                    userIds: [],
+                    searchText: null,
+                    startDate: null,
+                    endDate: null,
+                    overdue: null,
+                },
+                taskPriority: [
+                    {id: 1, label: 'None', value: 'NONE'},
+                    {id: 2, label: 'Low', value: 'LOW'},
+                    {id: 3, label: 'Medium', value: 'MEDIUM'},
+                    {id: 4, label: 'High', value: 'HIGH'},
+                    {id: 5, label: 'Very high', value: 'VERY_HIGH'}
+                ],
+                projectUsers: [],
             }
         },
         created() {
             this.loadData();
         },
         methods: {
+            search() {
+                let vm = this;
+                vm.loadData();
+            },
+            reset() {
+                this.filter = {
+                    priorities: [],
+                    userIds: [],
+                    searchText: null,
+                    startDate: null,
+                    endDate: null,
+                    overdue: null,
+                }
+                this.loadData();
+            },
             taskChange(data, task) {
                 let vm = this;
                 vm.$utils.setAttrs(vm, task, data);
@@ -258,17 +342,25 @@
             loadData() {
                 let vm = this;
                 vm.isLoading = true;
-                ProjectService.getTask(vm.projectId).then(response => {
+                ProjectService.getTask({
+                    projectId: vm.projectId,
+                    ...vm.filter
+                }).then(response => {
                     vm.isLoading = false;
                     vm.project = response;
                 }).catch(err => {
                     AlertService.error(err.message);
                 });
+
+                UserProjectService.getUserProjectByProjectId(vm.projectId, vm.filter).then(response => {
+                    vm.projectUsers = response;
+                    console.log(response);
+                })
             },
-            reorderCategory(){
-              let vm = this;
-              console.log("reorder")
-              vm.$refs.categoryReorder.show();
+            reorderCategory() {
+                let vm = this;
+                console.log("reorder")
+                vm.$refs.categoryReorder.show();
             },
             updateCategoryName(category) {
                 let vm = this;
@@ -360,9 +452,11 @@
     .list-group {
         height: 100%;
     }
+
     .list-group-item {
 
     }
+
     .ghost {
         font-size: 0;
         opacity: 1;
@@ -434,5 +528,9 @@
 
     .disable-cursor {
         cursor: not-allowed;
+    }
+
+    /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
+        width: auto;
     }
 </style>
