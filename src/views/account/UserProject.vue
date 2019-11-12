@@ -1,35 +1,67 @@
 <template>
-    <div>
-        <el-row type="flex" justify="end" class="padding-bottom-20">
-            <el-button type="primary" @click="createProject">Create Project</el-button>
-        </el-row>
-        <el-row class="row flex-wrap" :gutter="20">
-            <el-col style="padding-bottom: 20px" :span="8" v-for="project in projects" :key="project.id">
-                <el-card shadow="hover">
-                    <div slot="header" class="row v-center">
-                        <span class="flex-1" @click="goToProject(project.id)">{{project.name}}</span>
+    <div class="column flex padding-10">
+        <div class="text-right padding-bottom-10">
+            <el-button @click="createProject" type="primary">Create Project</el-button>
+        </div>
+        <div class="flex" v-if="projects">
+            <el-divider content-position="left">Owned</el-divider>
+            <el-row :gutter="20" class="row flex-wrap">
+                <el-col :key="project.id" :span="8" style="padding-bottom: 20px" v-for="project in projects.managing">
+                    <el-card shadow="hover">
+                        <div class="row v-center" slot="header">
+                            <span @click="goToProject(project.id)" class="flex-1">{{project.name}}</span>
 
-                        <el-dropdown trigger="click">
+                            <el-dropdown trigger="click">
                           <span class="el-dropdown-link">
                             <i class="el-icon-s-tools el-icon--right"></i>
                           </span>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item @click.native="editProject(project)" icon="el-icon-edit">Edit
-                                </el-dropdown-item>
-                                <el-dropdown-item @click.native="closeProject(project)" icon="el-icon-close">Close
-                                </el-dropdown-item>
-                                <el-dropdown-item @click.native="deleteProject(project)" icon="el-icon-delete">Delete
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </div>
-                    <div>
-                        <span>{{project.description}}</span>
-                    </div>
-                </el-card>
-            </el-col>
-        </el-row>
-        <ProjectDialog ref="projectDialog" @projectSaved="loadProject"/>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item @click.native="editProject(project)" icon="el-icon-edit">Edit
+                                    </el-dropdown-item>
+                                    <!--                                    <el-dropdown-item @click.native="closeProject(project)" icon="el-icon-close">Close-->
+                                    <!--                                    </el-dropdown-item>-->
+                                    <el-dropdown-item @click.native="deleteProject(project)" icon="el-icon-delete">
+                                        Delete
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </div>
+                        <div>
+                            <span>{{project.description}}</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <el-divider content-position="left">Joined</el-divider>
+            <el-row :gutter="20" class="row flex-wrap">
+                <el-col :key="project.id" :span="8" style="padding-bottom: 20px" v-for="project in projects.member">
+                    <el-card shadow="hover">
+                        <div class="row v-center" slot="header">
+                            <span @click="goToProject(project.id)" class="flex-1">{{project.name}}</span>
+
+                            <el-dropdown trigger="click">
+                          <span class="el-dropdown-link">
+                            <i class="el-icon-s-tools el-icon--right"></i>
+                          </span>
+                                <el-dropdown-menu slot="dropdown">
+<!--                                    <el-dropdown-item @click.native="editProject(project)" icon="el-icon-edit">Edit-->
+<!--                                    </el-dropdown-item>-->
+                                    <!--                                    <el-dropdown-item @click.native="closeProject(project)" icon="el-icon-close">Close-->
+                                    <!--                                    </el-dropdown-item>-->
+                                    <el-dropdown-item @click.native="leaveProject(project)" icon="el-icon-delete">
+                                        Leave
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </div>
+                        <div>
+                            <span>{{project.description}}</span>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </div>
+        <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
     </div>
 </template>
 
@@ -38,13 +70,15 @@
     import ProjectService from "@/service/project.service";
     import AlertService from "@/service/alert.service";
     import SweetAlert from "@/service/sweet-alert.service";
+    import UserProjectService from "@/service/user-project.service";
+    import AuthService from "@/service/auth.service";
+
     export default {
         name: "UserProject",
         components: {ProjectDialog},
         data() {
             return {
-                projects: [],
-                closedProjects: [],
+                projects: null,
             }
         },
         created() {
@@ -59,10 +93,9 @@
             },
             loadProject() {
                 let vm = this;
-                ProjectService.getAll().then(response => {
-                    vm.projects = response.filter(item => item.closed === false)
-                    vm.closedProjects = response.filter(item => item.closed === true);
-                })
+                UserProjectService.getOverviewByCurrentUser().then(response => {
+                    vm.projects = response;
+                });
             },
             editProject(project) {
                 console.log(project);
@@ -78,11 +111,24 @@
                         AlertService.success("Close project successfully")
                     }).catch(error => AlertService.error(error.message));
                 });
-
+            },
+            leaveProject(project) {
+                let vm = this;
+                AlertService.confirm("Leave this project?", function () {
+                    UserProjectService.deleteMember({
+                        userId: AuthService.getCurrentUser().id,
+                        projectId: project.id,
+                    })
+                        .then(res => {
+                            vm.loadProject();
+                            AlertService.success("Leave project successfully")
+                        })
+                        .catch(error => AlertService.error(error.message));
+                });
             },
             deleteProject(project) {
                 let vm = this;
-                SweetAlert.confirmDelete("Delete project", "Confirm delete " + project.name + "!", function () {
+                AlertService.confirm("Delete this project?", function () {
                     ProjectService.delete(project.id).then(response => {
                         vm.loadProject();
                         AlertService.success("Delete successfully")

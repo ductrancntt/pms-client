@@ -1,15 +1,15 @@
 <template>
     <div>
-        <el-dialog title="Project Dialog" width="30%" :visible.sync="dialogVisible">
-            <el-form ref="projectForm" :model="projectForm">
-                <el-form-item prop="name" label="Name">
-                    <el-input autofocus v-model="projectForm.name"></el-input>
+        <el-dialog :destroy-on-close="true" :close-on-click-modal="false" :visible.sync="dialogVisible" title="Project Dialog" width="30%">
+            <el-form :model="projectForm" ref="projectForm">
+                <el-form-item label="Name" prop="name">
+                    <el-input autofocus ref="txtName" v-model="projectForm.name"></el-input>
                 </el-form-item>
-                <el-form-item prop="description" label="Description">
-                    <el-input type="textarea" :rows="5" v-model="projectForm.description"></el-input>
+                <el-form-item label="Description" prop="description">
+                    <el-input :rows="5" type="textarea" v-model="projectForm.description"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button :disabled="isSaving" type="primary" @click="submit">Save</el-button>
+                    <el-button :disabled="isSaving" @click="submit" type="primary">Save</el-button>
                     <el-button @click="hide">Cancel</el-button>
                 </el-form-item>
             </el-form>
@@ -37,13 +37,20 @@
         },
         methods: {
             show() {
-                this.dialogVisible = true;
+                let vm = this;
+                vm.dialogVisible = true;
+                setTimeout(function () {
+                    vm.$refs.txtName.focus();
+                }, 1)
             },
             hide() {
                 this.dialogVisible = false;
+                this.projectForm = {};
+                this.$refs.projectForm.resetFields();
             },
             edit(project) {
-                this.projectForm = Object.assign(this.projectForm, project);
+                console.log("edit");
+                this.projectForm = JSON.parse(JSON.stringify(project));
                 this.show();
             },
             submit() {
@@ -60,6 +67,7 @@
                     console.log(response);
                     vm.hide();
                     vm.isSaving = false;
+                    vm.projectForm = {};
                     vm.$emit("projectSaved");
                 }
 

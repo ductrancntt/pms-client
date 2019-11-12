@@ -1,52 +1,54 @@
 <template>
     <el-container class="v-center">
-
         <el-row class="row flex-1 h-center">
             <el-col :span="7">
-                <el-form
-                        @keyup.enter.native="register"
-                        :inline="false"
-                        :rules="rules"
-                        :model="formData"
-                        ref="registerForm">
+                <el-card shadow="never">
 
-                    <el-form-item>
-                        <el-col :span="11">
-                            <el-form-item :label="$t('register.firstName')" prop="firstName">
-                                <el-input v-model="formData.firstName"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="2">&nbsp;</el-col>
-                        <el-col :span="11">
-                            <el-form-item :label="$t('register.lastName')" prop="lastName">
-                                <el-input v-model="formData.lastName"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-form-item>
+                    <el-form
+                            :inline="false"
+                            :model="formData"
+                            :rules="rules"
+                            @keyup.enter.native="register"
+                            ref="registerForm">
 
-                    <el-form-item :label="$t('register.username')" prop="username">
-                        <el-input v-model="formData.username"></el-input>
-                    </el-form-item>
+                        <el-form-item>
+                            <el-col :span="11">
+                                <el-form-item :label="$t('register.firstName')" prop="firstName">
+                                    <el-input v-model="formData.firstName"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="2">&nbsp;</el-col>
+                            <el-col :span="11">
+                                <el-form-item :label="$t('register.lastName')" prop="lastName">
+                                    <el-input v-model="formData.lastName"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-form-item>
 
-                    <el-form-item :label="$t('register.password')" prop="password">
-                        <el-input type="password" v-model="formData.password"></el-input>
-                    </el-form-item>
+                        <el-form-item :label="$t('register.username')" prop="username">
+                            <el-input v-model="formData.username"></el-input>
+                        </el-form-item>
 
-                    <el-form-item :label="$t('register.email')" prop="email">
-                        <el-input v-model="formData.email"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button class="width-100" type="success" @click="register">
-                            {{ $t('register.btnConfirm') }}
-                        </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button class="width-100" type="primary" @click="login">
-                            {{ $t('register.btnLogin') }}
-                        </el-button>
-                    </el-form-item>
+                        <el-form-item :label="$t('register.password')" prop="password">
+                            <el-input type="password" v-model="formData.password"></el-input>
+                        </el-form-item>
 
-                </el-form>
+                        <el-form-item :label="$t('register.email')" prop="email">
+                            <el-input v-model="formData.email"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button @click="register" class="width-100" type="success">
+                                {{ $t('register.btnConfirm') }}
+                            </el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button @click="login" class="width-100" type="primary">
+                                {{ $t('register.btnLogin') }}
+                            </el-button>
+                        </el-form-item>
+
+                    </el-form>
+                </el-card>
             </el-col>
         </el-row>
     </el-container>
@@ -101,7 +103,7 @@
             }
         },
         computed: {
-            isEmailValid(){
+            isEmailValid() {
                 return /[^@]+@[^\.]+\..+/.test(this.formData.email);
             }
         },

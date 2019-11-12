@@ -30,7 +30,7 @@
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span>Project</span>
+                        <span>My Project</span>
                     </div>
                     <div class="flex column">
                         <ul class="list">

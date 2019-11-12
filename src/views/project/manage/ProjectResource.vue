@@ -40,7 +40,7 @@
                                             <span><el-tag size="mini" type="info">{{att.createdDate | moment("HH:mm DD/MM/YYYY")}}</el-tag></span>
                                         </span>
                             </div>
-                            <el-button icon="el-icon-delete" size="small"
+                            <el-button @click="deleteAttachment(att)" icon="el-icon-delete" size="small"
                                        v-if="currentUser.id === att.createdBy.id">Delete
                             </el-button>
                         </div>
@@ -103,6 +103,16 @@
                 AttachmentService.getByProjectId(vm.projectId).then(response => {
                     vm.listAttachments = response;
                 })
+            },
+            deleteAttachment(att){
+                let vm = this;
+                AlertService.confirm("Delete this attachment", function () {
+                    AttachmentService.delete(att.id).then(()=> {
+                        vm.loadData();
+                    }).catch(error => {
+                        AlertService.error("Delete failed");
+                    })
+                });
             }
         }
     }

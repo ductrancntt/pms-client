@@ -10,7 +10,7 @@
                         <el-card :key="cat.id" class="margin-bottom-10" shadow="never" style="background: #E7EAF0"
                                  v-for="cat in listCategory">
                             <div class="row">
-                                <div class="flex">{{cat.pos}} - {{cat.name}}</div>
+                                <div class="flex">{{cat.name}}</div>
                             </div>
                         </el-card>
                     </transition-group>

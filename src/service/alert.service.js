@@ -49,7 +49,7 @@ let AlertService = {
 
         });
     },
-    prompt(message, title, inputValue, callback){
+    prompt(message, title, inputValue, callback) {
         MessageBox.prompt(message, title, {
             confirmButtonText: 'OK',
             cancelButtonText: 'Cancel',
