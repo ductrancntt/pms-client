@@ -1,6 +1,10 @@
 <template>
     <div class="column flex padding-20">
-        <el-row class="padding-bottom-20" justify="end" type="flex">
+        <el-row class="padding-bottom-20 row v-center">
+            <div class="flex">
+                <el-tag style="font-weight: bold" type="primary">{{ new Date() | moment("dddd, MMMM Do YYYY") }}
+                </el-tag>
+            </div>
             <el-button @click="createProject" style="font-size: 14pt; padding: 10px 15px" type="primary">
                 <el-icon name="circle-plus"></el-icon>
                 New Project
@@ -43,11 +47,11 @@
             </el-col>
         </el-row>
 
-        <el-row>
-            <el-card shadow="never">
-                <FullCalendar :plugins="calendarPlugins" defaultView="dayGridMonth"/>
-            </el-card>
-        </el-row>
+        <!--        <el-row>-->
+        <!--            <el-card shadow="never">-->
+        <!--                <FullCalendar :plugins="calendarPlugins" defaultView="dayGridMonth"/>-->
+        <!--            </el-card>-->
+        <!--        </el-row>-->
         <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
     </div>
 </template>

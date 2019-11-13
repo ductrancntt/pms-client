@@ -5,6 +5,7 @@ import ProjectRoutes from "@/router/project-route";
 import UserProject from "@/views/account/UserProject";
 import ChangePassword from "@/views/account/ChangePassword";
 import UserInvitation from "@/views/account/UserInvitation";
+import UserInfo from "@/views/account/UserInfo";
 
 const PrivateRoutes = [
     {
@@ -49,6 +50,15 @@ const PrivateRoutes = [
         component: UserInvitation,
         meta: {
             title: "User Invitation",
+            authorities: ['ROLE_USER']
+        },
+    },
+    {
+        path: '/user-info/:username',
+        name: 'userInfo',
+        component: UserInfo,
+        meta: {
+            title: "User Info",
             authorities: ['ROLE_USER']
         },
     },

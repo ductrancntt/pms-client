@@ -1,12 +1,12 @@
 <template>
     <div :style="{width: size + 'px', height: size+'px'}" class="pointer">
-        <el-tooltip @click.native="userProfile" :disabled="!showTooltip" effect="dark"
-                    :content="user.firstName + ' ' + user.lastName"
+        <el-tooltip :content="user.firstName + ' ' + user.lastName" :disabled="!showTooltip" @click.native="userProfile"
+                    effect="dark"
                     placement="bottom">
-            <el-avatar :shape="shape" v-if="user.imageUrl != null && user.imageUrl !== ''" :size="size"
-                       :src="user.imageUrl">
+            <el-avatar :shape="shape" :size="size" :src="user.imageUrl"
+                       v-if="user.imageUrl != null && user.imageUrl !== ''">
             </el-avatar>
-            <el-avatar v-else :shape="shape"  :size="size" :style="{fontSize: (size*0.4) + 'px'}">
+            <el-avatar :shape="shape" :size="size" :style="{fontSize: (size*0.4) + 'px'}" v-else>
                 <span>{{user.firstName[0]}}</span>
             </el-avatar>
         </el-tooltip>
@@ -14,11 +14,16 @@
 </template>
 
 <script>
+    import AuthService from "@/service/auth.service";
+
     export default {
         name: "UserAvatar",
         props: {
             user: Object,
-            isRouter: Boolean,
+            isRouter: {
+                type: Boolean,
+                default: true,
+            },
             showTooltip: {
                 type: Boolean,
                 default: true
@@ -35,9 +40,13 @@
         created() {
         },
         methods: {
-            userProfile(){
-                if (this.isRouter){
-                    console.log('Go to: ' + this.user.username);
+            userProfile() {
+                let vm = this;
+                if (vm.isRouter) {
+                    if (AuthService.getCurrentUser().id != vm.user.id)
+                        vm.$router.push({name: 'userInfo', params: {username: vm.user.username}})
+                    else vm.$router.push({name: 'profile'})
+
                     // this.$router.push({name: 'userProfile', params: {username: this.user.username}});
                 }
             }

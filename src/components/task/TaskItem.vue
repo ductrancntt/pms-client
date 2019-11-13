@@ -35,13 +35,13 @@
                     <div class="row flex align-bottom align-right">
                         <div class="row align-bottom" v-if="taskItem.assignedUsers.length <= 2">
                             <div v-for="user in taskItem.assignedUsers" :key="user.id" style="align-items: flex-end">
-                                <UserAvatar style="padding-left: 3px" :size="30" shape="circle" :user="user"/>
+                                <UserAvatar :is-router="false" style="padding-left: 3px" :size="30" shape="circle" :user="user"/>
                             </div>
                         </div>
                         <div class="row align-bottom" v-else>
                             <div v-for="user in taskItem.assignedUsers.slice(0,2)" :key="user.id"
                                  style="align-items: flex-end">
-                                <UserAvatar style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
+                                <UserAvatar :is-router="false" style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
                             </div>
                             <el-tooltip effect="dark" placement="bottom"
                                         :content="(taskItem.assignedUsers.length - 2) + ' more'">
@@ -86,7 +86,7 @@
                 if (this.task.estimateEndDate != null && (this.task.status === 'NO_PROGRESS' || this.task.status === 'IN_PROGRESS')) {
                     let date1 = new Date(this.task.estimateEndDate);
                     let date2 = new Date();
-                    if (date1.getTime() - date2.getTime() < 1000 * 60 * 24) return true;
+                    if (date1.getTime() - date2.getTime() < 1000 * 60 * 60 * 24) return true;
                     return false;
                 }
                 return false;

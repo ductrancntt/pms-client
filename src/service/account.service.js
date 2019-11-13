@@ -58,6 +58,11 @@ let AccountService = {
         return request.get(
             'api/projects/' + payload
         )
+    },
+    getUserInfo(payload){
+        return request.get(
+            'api/user-info/' + payload,
+        )
     }
 };
 

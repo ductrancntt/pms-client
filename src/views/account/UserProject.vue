@@ -4,12 +4,15 @@
             <el-button @click="createProject" type="primary">Create Project</el-button>
         </div>
         <div class="flex" v-if="projects">
-            <el-divider content-position="left">Owned</el-divider>
+            <el-divider content-position="left">
+                <el-tag>Owned</el-tag>
+            </el-divider>
             <el-row :gutter="20" class="row flex-wrap">
                 <el-col :key="project.id" :span="8" style="padding-bottom: 20px" v-for="project in projects.managing">
-                    <el-card shadow="hover">
+                    <el-card shadow="never">
                         <div class="row v-center" slot="header">
-                            <span @click="goToProject(project.id)" class="flex-1">{{project.name}}</span>
+                            <span @click="goToProject(project.id)" class="flex-1"
+                                  style="cursor: pointer; font-weight: bold">{{project.name}}</span>
 
                             <el-dropdown trigger="click">
                           <span class="el-dropdown-link">
@@ -30,12 +33,15 @@
                             <span>{{project.description}}</span>
                         </div>
                     </el-card>
+<!--                    <ProjectCard :project="project" />-->
                 </el-col>
             </el-row>
-            <el-divider content-position="left">Joined</el-divider>
+            <el-divider content-position="left">
+                <el-tag>Joined</el-tag>
+            </el-divider>
             <el-row :gutter="20" class="row flex-wrap">
                 <el-col :key="project.id" :span="8" style="padding-bottom: 20px" v-for="project in projects.member">
-                    <el-card shadow="hover">
+                    <el-card shadow="never">
                         <div class="row v-center" slot="header">
                             <span @click="goToProject(project.id)" class="flex-1">{{project.name}}</span>
 
@@ -44,8 +50,8 @@
                             <i class="el-icon-s-tools el-icon--right"></i>
                           </span>
                                 <el-dropdown-menu slot="dropdown">
-<!--                                    <el-dropdown-item @click.native="editProject(project)" icon="el-icon-edit">Edit-->
-<!--                                    </el-dropdown-item>-->
+                                    <!--                                    <el-dropdown-item @click.native="editProject(project)" icon="el-icon-edit">Edit-->
+                                    <!--                                    </el-dropdown-item>-->
                                     <!--                                    <el-dropdown-item @click.native="closeProject(project)" icon="el-icon-close">Close-->
                                     <!--                                    </el-dropdown-item>-->
                                     <el-dropdown-item @click.native="leaveProject(project)" icon="el-icon-delete">
@@ -72,10 +78,11 @@
     import SweetAlert from "@/service/sweet-alert.service";
     import UserProjectService from "@/service/user-project.service";
     import AuthService from "@/service/auth.service";
+    import ProjectCard from "@/components/project/ProjectCard";
 
     export default {
         name: "UserProject",
-        components: {ProjectDialog},
+        components: {ProjectCard, ProjectDialog},
         data() {
             return {
                 projects: null,
@@ -140,5 +147,7 @@
 </script>
 
 <style scoped>
-
+    /deep/ .el-divider__text {
+        background-color: transparent;
+    }
 </style>

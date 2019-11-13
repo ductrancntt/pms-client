@@ -75,12 +75,12 @@
                     //     label: "Manager",
                     //     managerOnly: true,
                     // },
-                    {
-                        routeName: "projectStatistic",
-                        icon: 'el-icon-s-data',
-                        label: "Statistic",
-                        managerOnly: true,
-                    },
+                    // {
+                    //     routeName: "projectStatistic",
+                    //     icon: 'el-icon-s-data',
+                    //     label: "Statistic",
+                    //     managerOnly: true,
+                    // },
                     {
                         routeName: "projectSetting",
                         icon: 'el-icon-setting',

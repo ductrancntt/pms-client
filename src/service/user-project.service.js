@@ -22,6 +22,11 @@ let UserProjectService = {
             baseUrl + "/user/" + payload
         )
     },
+    countProjectMember(payload){
+        return request.get(
+            baseUrl + "/count-member/" + payload
+        )
+    },
     getProjectByCurrentUserWithRoleManager(payload) {
         return request.get(
             baseUrl + "/user/" + payload
