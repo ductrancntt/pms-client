@@ -118,5 +118,7 @@
 </script>
 
 <style scoped>
-
+    /deep/.el-upload{
+        border-radius: 50% !important;
+    }
 </style>

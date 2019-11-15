@@ -60,7 +60,7 @@
                 </el-row>
             </div>
         </div>
-        <table class="table" v-if="project">
+        <table class="table" v-if="project != null">
             <thead>
             <th class="title-cell">
                 <i class="el-icon-circle-check"></i>
@@ -189,7 +189,7 @@
                 </td>
 
                 <!--VERIFIED-->
-                <td :class="isManager?'':'bg-info disable-cursor'" class="table-cell" v-if="project.info.verifyTask">
+                <td :class="isManager?'':'bg-dark disable-cursor'" class="table-cell" v-if="project.info.verifyTask">
                     <div class="category-title">
                         <el-tag class="width-100 text-center" type="danger" v-if="!isManager">Manager Only
                         </el-tag>

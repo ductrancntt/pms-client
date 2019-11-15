@@ -27,7 +27,7 @@
                 </el-form-item>
             </el-form>
         </div>
-        <el-button type="primary" style="height: 100%" slot="reference">Quick Add Category</el-button>
+        <el-button type="primary" style="height: 100%" slot="reference">Add Category</el-button>
     </el-popover>
 </template>
 

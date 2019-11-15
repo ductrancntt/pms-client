@@ -1,50 +1,56 @@
 <template>
     <div style="margin: 5px">
-        <el-card v-loading="isLoading" shadow="never" style="cursor: pointer;" :body-style="bodyStyle"
-                 @click.native="showDrawer">
+        <el-card :body-style="bodyStyle" :class="customClass" @click.native="showDrawer" shadow="never" style="cursor: pointer;"
+                 v-loading="isLoading">
             <div class="column no-wrap">
                 <div class="flex" style="margin: 0 0 4px; text-align: justify">
                     <span>{{taskItem.name}}</span>
                 </div>
                 <div class="row no-wrap">
                     <div class="row align-bottom">
-                        <!--                        <el-tooltip v-if="task.priority === 'NONE'" effect="dark" content="None" placement="bottom">-->
-                        <!--                            <el-button style="" class="padding-0 priority-button"></el-button>-->
-                        <!--                        </el-tooltip>-->
-                        <el-tooltip v-if="taskItem.priority === 'LOW'" effect="dark" content="Low" placement="bottom">
-                            <el-button type="success" class="padding-0 priority-button margin-right-5"></el-button>
+                        <el-tooltip content="Low" effect="dark" placement="bottom" v-if="taskItem.priority === 'LOW'">
+                            <el-button class="padding-0 priority-button margin-right-5" type="success"></el-button>
                         </el-tooltip>
-                        <el-tooltip v-else-if="taskItem.priority === 'MEDIUM'" effect="dark" content="Medium"
-                                    placement="bottom">
-                            <el-button type="primary" class="padding-0 priority-button margin-right-5"></el-button>
+                        <el-tooltip content="Medium" effect="dark" placement="bottom"
+                                    v-else-if="taskItem.priority === 'MEDIUM'">
+                            <el-button class="padding-0 priority-button margin-right-5" type="primary"></el-button>
                         </el-tooltip>
-                        <el-tooltip v-else-if="taskItem.priority === 'HIGH'" effect="dark" content="High"
-                                    placement="bottom">
-                            <el-button type="warning" class="padding-0 priority-button margin-right-5"></el-button>
+                        <el-tooltip content="High" effect="dark" placement="bottom"
+                                    v-else-if="taskItem.priority === 'HIGH'">
+                            <el-button class="padding-0 priority-button margin-right-5" type="warning"></el-button>
                         </el-tooltip>
-                        <el-tooltip v-else-if="taskItem.priority === 'VERY_HIGH'" effect="dark" content="Very High"
-                                    placement="bottom">
-                            <el-button type="danger" class="padding-0 priority-button margin-right-5"></el-button>
+                        <el-tooltip content="Very High" effect="dark" placement="bottom"
+                                    v-else-if="taskItem.priority === 'VERY_HIGH'">
+                            <el-button class="padding-0 priority-button margin-right-5" type="danger"></el-button>
                         </el-tooltip>
                     </div>
-                    <div class="row flex align-bottom" v-if="taskItem.status === 'IN_PROGRESS'">
+                    <div class="row align-bottom padding-right-5" v-if="taskItem.status === 'IN_PROGRESS'">
                         <div v-if="taskItem.progress !== 0">
                             <el-tag size="mini">{{taskItem.progress}}%</el-tag>
                         </div>
                     </div>
+                    <div class="row flex align-bottom" v-if="taskItem.estimateStartDate">
+                        <div>
+                            <el-tag size="mini" type="info">{{taskItem.estimateStartDate | moment("DD/MM")}} -
+                                {{taskItem.estimateEndDate | moment("DD/MM")}}
+                            </el-tag>
+                        </div>
+                    </div>
                     <div class="row flex align-bottom align-right">
                         <div class="row align-bottom" v-if="taskItem.assignedUsers.length <= 2">
-                            <div v-for="user in taskItem.assignedUsers" :key="user.id" style="align-items: flex-end">
-                                <UserAvatar :is-router="false" style="padding-left: 3px" :size="30" shape="circle" :user="user"/>
+                            <div :key="user.id" style="align-items: flex-end" v-for="user in taskItem.assignedUsers">
+                                <UserAvatar :is-router="false" :size="30" :user="user" shape="circle"
+                                            style="padding-left: 3px"/>
                             </div>
                         </div>
                         <div class="row align-bottom" v-else>
-                            <div v-for="user in taskItem.assignedUsers.slice(0,2)" :key="user.id"
-                                 style="align-items: flex-end">
-                                <UserAvatar :is-router="false" style="padding-left: 3px" :size="25" shape="circle" :user="user"/>
+                            <div :key="user.id" style="align-items: flex-end"
+                                 v-for="user in taskItem.assignedUsers.slice(0,2)">
+                                <UserAvatar :is-router="false" :size="25" :user="user" shape="circle"
+                                            style="padding-left: 3px"/>
                             </div>
-                            <el-tooltip effect="dark" placement="bottom"
-                                        :content="(taskItem.assignedUsers.length - 2) + ' more'">
+                            <el-tooltip :content="(taskItem.assignedUsers.length - 2) + ' more'" effect="dark"
+                                        placement="bottom">
                                 <span style="letter-spacing: 2px">...</span>
                             </el-tooltip>
                         </div>
@@ -52,8 +58,9 @@
                 </div>
             </div>
         </el-card>
-        <TaskDrawer :is-archived="isArchived" :project-id="projectId" :task-id="task.id" :is-manager="isManager" @taskUpdated="updateTask"
+        <TaskDrawer :is-archived="isArchived" :is-manager="isManager" :project-id="projectId" :task-id="task.id"
                     @deleteTask="deleteTask"
+                    @taskUpdated="updateTask"
                     ref="drawer"/>
     </div>
 </template>
@@ -79,6 +86,10 @@
             isArchived: {
                 type: Boolean,
                 default: false,
+            },
+            customClass: {
+                type: String,
+                default: ''
             }
         },
         computed: {

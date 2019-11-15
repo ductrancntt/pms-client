@@ -1,6 +1,6 @@
 <template>
     <div id="kanban" style="overflow-y: hidden" v-loading="isLoading">
-        <table class="table">
+        <table class="table" v-if="project.info != null">
             <thead>
             <th class="title-cell">
                 <i class="el-icon-circle-check"></i>

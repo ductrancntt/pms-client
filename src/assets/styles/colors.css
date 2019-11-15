@@ -18,6 +18,18 @@
     background-color: #F56C6C !important;
 }
 
+.bg-dark {
+    background-color: #ccc !important;
+}
+
+.bg-light {
+    background-color: #e8f3fe !important;
+}
+
+.gray {
+    background-color: #eee !important;
+}
+
 .text-white{
     color: #fff !important;
 }

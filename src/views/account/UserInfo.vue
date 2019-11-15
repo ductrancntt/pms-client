@@ -6,7 +6,7 @@
                     <UserAvatar :is-router="false" :size="200" :user="user" v-if="user"/>
                 </div>
                 <div>
-                    <table v-if="user" border="1" cellpadding="20" style="table-layout: fixed; width: 100%">
+                    <table v-if="user" style="table-layout: fixed; width: 100%; line-height: 2">
                         <tr>
                             <td>Full Name:</td>
                             <td>{{user.firstName}} {{user.lastName}}</td>
@@ -23,9 +23,9 @@
             <el-divider content-position="left">
                 <el-tag>Mutual Project</el-tag>
             </el-divider>
-            <el-row :gutter="10">
+            <el-row :gutter="10" class="row flex-wrap">
                 <el-col :span="8" v-for="project in projects" :key="project.id">
-                    <ProjectCard :project="project" />
+                    <ProjectCard :project="project" class="margin-bottom-10" />
                 </el-col>
             </el-row>
         </div>

@@ -1,6 +1,6 @@
 <template>
     <div class="width-100 padding-20 column flex">
-        <div class="column flex">
+        <div class="column flex" v-if="project">
             <div class="flex">
                 <div class="row">
                     <div class="column flex">
@@ -12,7 +12,7 @@
                                     </el-tag>
                                 </div>
                             </div>
-                            <el-button @click="editProject" plain size="mini" type="primary">Edit</el-button>
+                            <el-button v-if="isManager" @click="editProject" plain size="mini" type="primary">Edit</el-button>
                             <ProjectDialog @projectSaved="loadData" ref="projectDialog"/>
                         </div>
                         <div class="flex padding-top-10">

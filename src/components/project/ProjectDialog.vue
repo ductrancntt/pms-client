@@ -9,7 +9,7 @@
                     <el-input :rows="5" type="textarea" v-model="projectForm.description"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button :disabled="isSaving" @click="submit" type="primary">Save</el-button>
+                    <el-button :disabled="isSaving || !projectForm.name" @click="submit" type="primary">Save</el-button>
                     <el-button @click="hide">Cancel</el-button>
                 </el-form-item>
             </el-form>

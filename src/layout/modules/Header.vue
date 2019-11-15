@@ -1,44 +1,58 @@
 <template>
-    <el-header height="50px" class="row v-center custom-header">
+    <el-header class="row v-center custom-header" height="50px">
         <div class="row flex v-center">
-            <img @click="navigateTo('home')" style="cursor: pointer; width: 36px; height: 36px;" src="../../assets/images/logo.png"/>
+            <img @click="navigateTo('home')" src="../../assets/images/logo.png"
+                 style="cursor: pointer; width: 36px; height: 36px;"/>
             <h1 @click="navigateTo('home')" class="header-title">&nbsp;PMS</h1>
         </div>
         <div class="row flex-2">
             <el-row class="row flex h-center">
                 <el-col :span="16">
-                    <el-input size="small" placeholder="Search">
-                        <i slot="prefix" class="el-input__icon el-icon-search"></i>
-                    </el-input>
+<!--                    <el-input placeholder="Search" size="small">-->
+<!--                        <i class="el-input__icon el-icon-search" slot="prefix"></i>-->
+<!--                    </el-input>-->
                 </el-col>
             </el-row>
         </div>
         <div class="row flex v-center align-right">
             <div class="padding-right-40">
                 <el-dropdown trigger="click">
-                    <el-badge is-dot class="el-dropdown-link">
-                        <el-button style="font-size: 16pt; padding: 8px" class="text-white" type="text"
-                                   icon="el-icon-message-solid" circle></el-button>
+                    <el-badge :hidden="!hasNewNotification" class="el-dropdown-link" is-dot>
+                        <el-button circle class="text-white" icon="el-icon-message-solid"
+                                   style="font-size: 16pt; padding: 8px" type="text"></el-button>
                     </el-badge>
-                    <el-dropdown-menu slot="dropdown" class="notification">
-                        <el-dropdown-item class="notification-item" v-for="notif in notifications" :key="notif.id">
-                            <span>{{notif.content}}</span>
+                    <el-dropdown-menu class="notification" slot="dropdown">
+                        <el-dropdown-item class="notification-item padding-10" v-if="notifications.length == 0">
+                            You have no notification!
+                        </el-dropdown-item>
+                        <el-dropdown-item :key="notif.notificationId" class="notification-item"
+                                          v-for="notif in notifications">
+                            <NotificationItem :user-notification="notif"/>
+                        </el-dropdown-item>
+                        <el-dropdown-item class="row h-center">
+                            <el-button :disabled="notifications.length == 0" type="text"><span
+                                    style="font-weight: bold;">Mark all as read!</span></el-button>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <UserAvatar :user="user" :show-tooltip="false"/>
-            <el-dropdown trigger="click" class="padding-left-10">
+            <UserAvatar :show-tooltip="false" :user="user"/>
+            <el-dropdown class="padding-left-10" trigger="click">
                 <el-button class="el-dropdown-link text-white" type="text">
                     <span>{{user.firstName}} {{user.lastName}}</span>
                     <i class="el-icon-arrow-down"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="navigateTo('userProject')">My Project</el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('userInvitation')">My Invitation</el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('profile')">My Profile</el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('changePassword')">Change Password</el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('loginPage')">Logout</el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('userProject')" class="padding-left-10 padding-right-10">My Project
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('userInvitation')" class="padding-left-10 padding-right-10">My Invitation
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('profile')" class="padding-left-10 padding-right-10">My Profile
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('changePassword')" class="padding-left-10 padding-right-10">Change Password
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="navigateTo('loginPage')" class="padding-left-10 padding-right-10">Logout
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
 
@@ -50,75 +64,39 @@
     import Auth from "@/service/auth.service";
     import {bus} from "@/main";
     import UserAvatar from "@/components/UserAvatar";
+    import UserNotificationService from "@/service/user-notification.service";
+    import NotificationItem from "@/components/notification/NotificationItem";
 
     export default {
         name: "Header",
-        components: {UserAvatar},
+        components: {NotificationItem, UserAvatar},
         data() {
             return {
                 user: Auth.getCurrentUser() ? Auth.getCurrentUser() : {},
-                notifications: [
-                    {
-                        id: 1,
-                        content: "This is test text!!! This is test text!!! This is test text!!!"
-                    },
-                    {
-                        id: 2,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 3,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 4,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 5,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 6,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 7,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 8,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 9,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 10,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 11,
-                        content: "This is test text!!!"
-                    },
-                    {
-                        id: 12,
-                        content: "This is test text!!!"
-                    },
-                ]
+                notifications: [],
+                hasNewNotification: false,
             }
         },
         created() {
             let vm = this;
             bus.$on("updateAccount", function () {
                 vm.user = Auth.getCurrentUser();
-            })
+            });
+            vm.loadData();
         },
         methods: {
             navigateTo(routeName) {
                 if (routeName === 'loginPage') Auth.logout();
                 this.$router.push({name: routeName});
+            },
+            loadData() {
+                let vm = this;
+                UserNotificationService.getByUser().then(response => {
+                    vm.notifications = response;
+                    vm.notifications.forEach(notif => {
+                        if (notif.status === 'UNSEEN') vm.hasNewNotification = true;
+                    })
+                })
             }
         }
     }
@@ -140,8 +118,8 @@
     .notification-item {
         display: flex;
         align-items: center;
-        border-bottom: 1px solid #eee;
-        padding: 10px;
+        border-bottom: 0.5px solid #ccc;
+        /*padding: 10px;*/
     }
 
     /deep/ .el-badge__content.is-fixed {
@@ -153,11 +131,17 @@
         max-width: 250px;
         max-height: 600px;
         overflow-y: auto;
+        padding: 0 !important;
+    }
+
+    /deep/ .el-dropdown-menu__item {
+        padding: 0;
     }
 
     .notification {
         max-width: 300px;
         max-height: 400px;
         overflow-y: auto;
+        padding: 0;
     }
 </style>

@@ -32,14 +32,13 @@
                         </tr>
                         <tr>
                             <td>Created by:
-                                <a class="item-link"
-                                   style="font-weight: 500; color: #026AA7; cursor: pointer">{{task.creator.firstName}} {{task.creator.lastName}}</a>
+                                <UsernameLink :user="task.creator"/>
                             </td>
                             <td>Start/Due Date:
-                                <span v-if="task.estimateStartDate || task.estimateEndDate">
-                                    <span v-if="task.estimateStartDate">{{task.estimateStartDate | moment("DD/MMM")}}</span>
+                                <span style="font-weight: bold" v-if="task.estimateStartDate || task.estimateEndDate">
+                                    <span v-if="task.estimateStartDate">{{task.estimateStartDate | moment("DD/MM/YYYY")}}</span>
                                         <el-icon name="right"/>
-                                    <span v-if="task.estimateEndDate">{{task.estimateEndDate | moment("DD/MMM")}}</span>
+                                    <span v-if="task.estimateEndDate">{{task.estimateEndDate | moment("DD/MM/YYYY")}}</span>
                                 </span>
                                 <span v-else>
                                     <el-tag size="mini" type="info">Not set</el-tag>
@@ -206,10 +205,14 @@
     import AttachmentUploader from "@/components/AttachmentUploader";
     import Attachment from "@/components/attachment/Attachment";
     import Activity from "@/components/activity/Activity";
+    import UsernameLink from "@/components/UsernameLink";
 
     export default {
         name: "TaskDrawer",
-        components: {Activity, Attachment, AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar},
+        components: {
+            UsernameLink,
+            Activity, Attachment, AttachmentUploader, TaskStatus, TaskPriority, Comment, UserAvatar
+        },
         props: {
             projectId: Number,
             taskId: Number,
@@ -312,11 +315,12 @@
                 let vm = this;
                 vm.visible = true;
                 vm.isLoading = true;
-                vm.loadTaskContent();
-
                 setTimeout(function () {
-                    vm.loadTaskActivities();
-                },400);
+                    vm.loadTaskContent();
+                    setTimeout(function () {
+                        vm.loadTaskActivities();
+                    }, 500)
+                }, 400);
             },
             hide(done) {
                 this.visible = false;

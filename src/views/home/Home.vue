@@ -14,44 +14,60 @@
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span>My Tasks</span>
+                        <span style="font-weight: bold">Recent Tasks</span>
                     </div>
-                    <div>
-
+                    <div class="column flex v-center h-center" v-if="listTask.length === 0">
+                        <i class="el-icon-finished icon-class"></i>
+                    </div>
+                    <div class="flex column" v-else>
+                        <div>
+                            <TaskItem :is-manager="task.manager"
+                                      :key="task.taskDto.id"
+                                      :project-id="task.projectId"
+                                      :task="task.taskDto"
+                                      @taskChange="loadTask"
+                                      @taskDeleted="loadTask"
+                                      class="list-group-item"
+                                      custom-class="gray"
+                                      v-for="task in listTask"/>
+                        </div>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span>Notification</span>
+                        <span style="font-weight: bold">Recent Notifications</span>
                     </div>
-                    <div>
-
+                    <div class="column flex v-center h-center" v-if="listNotification.length === 0">
+                        <i class="el-icon-close-notification icon-class"></i>
+                    </div>
+                    <div class="flex column" v-else>
+                        <div v-for="noti in listNotification" :key="noti.notificationId" >
+                            <NotificationItem :user-notification="noti" />
+                        </div>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span>My Project</span>
+                        <span style="font-weight: bold">Recent Projects</span>
                     </div>
-                    <div class="flex column">
+                    <div class="column flex v-center h-center" v-if="listProject.length === 0">
+                        <i class="el-icon-folder-checked icon-class"></i>
+                    </div>
+                    <div class="flex column" v-else>
                         <ul class="list">
-                            <li :key="project.id" class="list-item" v-for="project in listProject">
-                                <el-link @click="goToProject(project)">{{project.name}}</el-link>
+                            <li :key="project.id" @click="goToProject(project)" class="list-item pointer"
+                                v-for="project in listProject">
+                                <el-link>{{project.name}}</el-link>
                             </li>
                         </ul>
                     </div>
                 </el-card>
             </el-col>
         </el-row>
-
-        <!--        <el-row>-->
-        <!--            <el-card shadow="never">-->
-        <!--                <FullCalendar :plugins="calendarPlugins" defaultView="dayGridMonth"/>-->
-        <!--            </el-card>-->
-        <!--        </el-row>-->
         <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
     </div>
 </template>
@@ -60,25 +76,36 @@
     import ProjectDialog from "@/components/project/ProjectDialog";
     import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
-    import UserProjectService from "@/service/user-project.service";
-    import AlertService from "@/service/alert.service";
+    import ProjectLogService from "@/service/project-log.service";
+    import TaskLogService from "@/service/task-log.service";
+    import TaskItem from "@/components/task/TaskItem";
+    import UserNotificationService from "@/service/user-notification.service";
+    import NotificationItem from "@/components/notification/NotificationItem";
 
     export default {
         name: "Home",
-        components: {ProjectDialog, FullCalendar},
+        components: {NotificationItem, TaskItem, ProjectDialog, FullCalendar},
         data() {
             return {
                 calendarPlugins: [dayGridPlugin],
                 listProject: [],
+                listTask: [],
+                listNotification: [],
                 cardStyle: {
+                    'display': 'flex',
                     'min-height': '360px',
                     'overflow': 'auto',
                     'max-height': '360px',
+                    // 'border': '3px dashed #aaa',
+                    // 'border-top-width': '0',
+                    // 'background': '#e7eaf0',
+                    'padding': '10px',
+                    'margin-bottom': '30px'
                 }
             }
         },
         created() {
-            this.loadProject();
+            this.loadData();
         },
         methods: {
             goToProject(project) {
@@ -89,9 +116,28 @@
             },
             loadProject() {
                 let vm = this;
-                UserProjectService.getProjectByCurrentUser().then(response => {
+                ProjectLogService.getRecentProject().then(response => {
                     vm.listProject = response;
-                }).catch(error => AlertService.error(error.message));
+                });
+            },
+            loadNotification() {
+                let vm = this;
+                UserNotificationService.getUnseenNotification().then(response => {
+                    vm.listNotification = response;
+                })
+            },
+            loadTask() {
+                let vm = this;
+                TaskLogService.getRecentTask().then(response => {
+                    console.log(response);
+                    vm.listTask = response;
+                })
+            },
+            loadData() {
+                let vm = this;
+                vm.loadProject();
+                vm.loadNotification();
+                vm.loadTask();
             }
         }
     }
@@ -109,8 +155,15 @@
         align-items: center;
         justify-content: center;
         height: 50px;
-        background: #e8f3fe;
-        margin-bottom: 10px;
+        background: #eee;
+        /*background: #e8f3fe;*/
+        margin-bottom: 5px;
         color: #7dbcfc
     }
+
+    .icon-class {
+        font-size: 100pt;
+        color: #aaa
+    }
+
 </style>

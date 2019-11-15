@@ -3,7 +3,8 @@
         <div class="text-right padding-bottom-10">
             <el-button @click="createProject" type="primary">Create Project</el-button>
         </div>
-        <div class="flex" v-if="projects">
+
+        <div class="flex" v-if="projects && projects.managing.length > 0 || projects.member.length > 0">
             <el-divider content-position="left">
                 <el-tag>Owned</el-tag>
             </el-divider>
@@ -67,6 +68,11 @@
                 </el-col>
             </el-row>
         </div>
+
+        <div v-else class="column flex v-center h-center">
+            <i class="el-icon-folder-checked icon-class"></i>
+            <p style="font-size: 16pt">You don't have any projects</p>
+        </div>
         <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
     </div>
 </template>
@@ -101,6 +107,7 @@
             loadProject() {
                 let vm = this;
                 UserProjectService.getOverviewByCurrentUser().then(response => {
+                    console.log(response)
                     vm.projects = response;
                 });
             },
@@ -149,5 +156,10 @@
 <style scoped>
     /deep/ .el-divider__text {
         background-color: transparent;
+    }
+
+    .icon-class {
+        font-size: 100pt;
+        color: #aaa
     }
 </style>

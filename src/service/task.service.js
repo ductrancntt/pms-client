@@ -47,6 +47,11 @@ let TaskService = {
             baseUrl + "/delete/" + payload
         )
     },
+    getTaskDrawer(payload){
+        return request.get(
+            baseUrl + "/get-drawer/" + payload
+        )
+    }
 };
 
 export default TaskService;

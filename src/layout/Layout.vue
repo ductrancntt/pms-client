@@ -3,6 +3,7 @@
         <el-container direction="vertical">
             <Header></Header>
             <el-main class="row padding-0">
+<!--                <transition name="el-fade-in">-->
                 <transition name="fade" mode="out-in">
                     <router-view>
                         <!--Content goes here-->
