@@ -1,5 +1,5 @@
 <template>
-    <div class="row v-center notification-item pointer" style="line-height: 1.5" :class="itemClass" >
+    <div class="row v-center notification-item pointer flex" style="line-height: 1.5" :class="itemClass" >
         <div>
             <UserAvatar :user="userNotification.createdBy"/>
         </div>

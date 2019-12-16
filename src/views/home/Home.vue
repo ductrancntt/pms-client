@@ -14,8 +14,29 @@
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span style="font-weight: bold">Recent Tasks</span>
+                        <div class="row padding" style="height: 30px">
+                            <span class="flex" style="font-weight: bold">Notes</span>
+                            <el-button @click="createNote" circle icon="el-icon-plus" size="mini" type="primary"></el-button>
+                        </div>
                     </div>
+                    <div class="column flex v-center h-center" v-if="listNote.length === 0">
+                        <i class="el-icon-notebook-1 icon-class"></i>
+                    </div>
+                    <div class="flex column" v-else>
+                        <div>
+                            <NoteItem @itemUpdated="loadNote" :key="note.id" v-for="note in listNote" :item="note"/>
+                        </div>
+                    </div>
+                </el-card>
+            </el-col>
+            <el-col :span="8" class="flex">
+                <el-card :body-style="cardStyle" shadow="never">
+                    <div slot="header">
+                        <div style="height: 30px">
+                            <span style="font-weight: bold">Recent Tasks</span>
+                        </div>
+                    </div>
+
                     <div class="column flex v-center h-center" v-if="listTask.length === 0">
                         <i class="el-icon-finished icon-class"></i>
                     </div>
@@ -37,22 +58,9 @@
             <el-col :span="8" class="flex">
                 <el-card :body-style="cardStyle" shadow="never">
                     <div slot="header">
-                        <span style="font-weight: bold">Recent Notifications</span>
-                    </div>
-                    <div class="column flex v-center h-center" v-if="listNotification.length === 0">
-                        <i class="el-icon-close-notification icon-class"></i>
-                    </div>
-                    <div class="flex column" v-else>
-                        <div v-for="noti in listNotification" :key="noti.notificationId" >
-                            <NotificationItem :user-notification="noti" />
+                        <div style="height: 30px">
+                            <span style="font-weight: bold">Recent Projects</span>
                         </div>
-                    </div>
-                </el-card>
-            </el-col>
-            <el-col :span="8" class="flex">
-                <el-card :body-style="cardStyle" shadow="never">
-                    <div slot="header">
-                        <span style="font-weight: bold">Recent Projects</span>
                     </div>
                     <div class="column flex v-center h-center" v-if="listProject.length === 0">
                         <i class="el-icon-folder-checked icon-class"></i>
@@ -69,28 +77,31 @@
             </el-col>
         </el-row>
         <ProjectDialog @projectSaved="loadProject" ref="projectDialog"/>
+        <NoteDialog @noteSaved="loadNote" ref="noteDialog"/>
     </div>
 </template>
 
 <script>
     import ProjectDialog from "@/components/project/ProjectDialog";
-    import FullCalendar from '@fullcalendar/vue'
     import dayGridPlugin from '@fullcalendar/daygrid'
     import ProjectLogService from "@/service/project-log.service";
     import TaskLogService from "@/service/task-log.service";
     import TaskItem from "@/components/task/TaskItem";
     import UserNotificationService from "@/service/user-notification.service";
-    import NotificationItem from "@/components/notification/NotificationItem";
+    import NoteDialog from "@/components/note/NoteDialog";
+    import NoteService from "@/service/note.service";
+    import NoteItem from "@/components/note/NoteItem";
 
     export default {
         name: "Home",
-        components: {NotificationItem, TaskItem, ProjectDialog, FullCalendar},
+        components: {NoteItem, NoteDialog, TaskItem, ProjectDialog},
         data() {
             return {
                 calendarPlugins: [dayGridPlugin],
                 listProject: [],
                 listTask: [],
                 listNotification: [],
+                listNote: [],
                 cardStyle: {
                     'display': 'flex',
                     'min-height': '360px',
@@ -111,6 +122,9 @@
             goToProject(project) {
                 this.$router.push({name: 'project', params: {id: project.id}});
             },
+            createNote() {
+                this.$refs.noteDialog.show();
+            },
             createProject() {
                 this.$refs.projectDialog.show();
             },
@@ -119,6 +133,12 @@
                 ProjectLogService.getRecentProject().then(response => {
                     vm.listProject = response;
                 });
+            },
+            loadNote() {
+                let vm = this;
+                NoteService.getAll().then(response => {
+                    vm.listNote = response;
+                })
             },
             loadNotification() {
                 let vm = this;
@@ -138,6 +158,7 @@
                 vm.loadProject();
                 vm.loadNotification();
                 vm.loadTask();
+                vm.loadNote();
             }
         }
     }

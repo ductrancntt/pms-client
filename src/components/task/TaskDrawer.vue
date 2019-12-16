@@ -88,7 +88,47 @@
                     <Attachment :attachment="att" :key="att.id" class="margin-left-5"
                                 v-for="att in task.attachments"/>
                 </div>
-
+                <div id="report" v-if="task.status === 'COMPLETED' || task.status === 'VERIFIED' && task.reports.length !== 0">
+                    <el-divider content-position="left">Report</el-divider>
+                    <el-card class="report-card" :body-style="{padding: '10px'}" shadow="never">
+                        <div class="column">
+                            <div>
+                                <el-card class="margin-bottom-10" :key="att.id" shadow="never" v-for="att in task.reports">
+                                    <div class="row align-center">
+                                        <div class="column flex">
+                                        <span class="flex" style="font-weight: 500">
+                                            <Attachment :attachment="att" size="medium"/>
+                                        </span>
+                                            <span v-html="att.description"></span>
+                                            <span class="padding-right-10 padding-top-10"
+                                                  style="font-style: italic; font-size: 10pt">
+                                            <span>
+                                                Uploaded by
+                                            <UsernameLink :user="att.createdBy"/> at
+                                            </span>
+                                            <span><el-tag size="mini" type="info">{{att.createdDate | moment("HH:mm DD/MM/YYYY")}}</el-tag></span>
+                                        </span>
+                                        </div>
+                                        <div v-if="isImage(att)">
+                                            <el-image
+                                                    style="width: 70px; height: 70px; border: 1px dashed #aaa"
+                                                    :src="att.url"
+                                                    :preview-src-list="[att.url]">
+                                            </el-image>
+                                        </div>
+                                    </div>
+                                </el-card>
+                            </div>
+                            <div v-if="task.status !== 'VERIFIED'">
+                                <AttachmentUploader :on-change="changeReportFile" ref="reportUploader" size="mini" text="Submit files" type="info"/>
+                            </div>
+                            <div class="padding-top-10 padding-bottom-10" v-if="hasReportFile">
+                                <el-button size="mini" @click="submitReport" type="primary">Upload</el-button>
+                                <el-button size="mini" @click="clearFiles">Clear</el-button>
+                            </div>
+                        </div>
+                    </el-card>
+                </div>
                 <div id="comment-thread">
                     <el-divider content-position="left">Comment</el-divider>
                     <Comment :disabled="isArchived" :task-id="task.id"/>
@@ -228,6 +268,7 @@
         },
         data() {
             return {
+                hasReportFile: false,
                 editor: ClassicEditor,
                 editMode: false,
                 isLoading: false,
@@ -266,10 +307,25 @@
                 },
                 dateRange: [],
                 selectedFiles: [],
+                selectedReports: [],
                 activities: [],
             }
         },
         methods: {
+            isImage(att){
+              return att.type.includes("image");
+            },
+            changeReportFile(){
+                let vm = this;
+                if (vm.$refs.reportUploader && vm.$refs.reportUploader.getUploadFiles().length !== 0) vm.hasReportFile = true;
+                else vm.hasReportFile = false;
+                console.log(vm.hasReportFile);
+            },
+            clearFiles() {
+                let vm = this;
+                vm.$refs.reportUploader.clearFiles();
+                vm.changeReportFile();
+            },
             removeUser(user) {
                 console.log(user);
                 if (!this.task.removeAssignUserIds) this.task.removeAssignUserIds = [];
@@ -327,13 +383,34 @@
                 this.editMode = false;
                 done();
             },
+            submitReport(){
+                let vm = this;
+                let params = new FormData();
+                let isTaskReport = true;
+                params.append("dto", new Blob([JSON.stringify(vm.task)], {type: 'application/json'}));
+                params.append("isTaskReport", new Blob([JSON.stringify(isTaskReport)], {type: 'application/json'}));
+                vm.selectedReports = vm.$refs.reportUploader.getUploadFiles();
+                vm.selectedReports.forEach(file => {
+                    params.append("files", file.raw);
+                });
+
+                TaskService.update(params).then(response => {
+                    // vm.editMode = false;
+                    // vm.$emit("taskUpdated", vm.task);
+                    vm.clearFiles();
+                    vm.loadTaskContent();
+                    // vm.loadTaskActivities();
+                }).catch(err => AlertService.error("Error"))
+            },
             submit() {
                 let vm = this;
                 let params = new FormData();
                 vm.isSaving = true;
                 vm.task.estimateStartDate = vm.dateRange[0];
                 vm.task.estimateEndDate = vm.dateRange[1];
+                let isTaskReport = false;
                 params.append("dto", new Blob([JSON.stringify(vm.task)], {type: 'application/json'}));
+                params.append("isTaskReport", new Blob([JSON.stringify(isTaskReport)], {type: 'application/json'}));
                 vm.selectedFiles = vm.$refs.attachmentUploader.getUploadFiles();
                 vm.selectedFiles.forEach(file => {
                     params.append("files", file.raw);
@@ -397,5 +474,9 @@
 
     .item-link:hover {
         text-decoration: underline;
+    }
+
+    .report-card {
+        background: #ddd;
     }
 </style>

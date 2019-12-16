@@ -3,7 +3,7 @@
         <div class="row flex v-center">
             <img @click="navigateTo('home')" src="../../assets/images/logo.png"
                  style="cursor: pointer; width: 36px; height: 36px;"/>
-            <h1 @click="navigateTo('home')" class="header-title">&nbsp;PMS</h1>
+            <h1 @click="navigateTo('home')" class="header-title">&nbsp;DT Tracker</h1>
         </div>
         <div class="row flex-2">
             <el-row class="row flex h-center">

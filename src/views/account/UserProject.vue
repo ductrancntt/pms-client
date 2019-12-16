@@ -4,7 +4,7 @@
             <el-button @click="createProject" type="primary">Create Project</el-button>
         </div>
 
-        <div class="flex" v-if="projects && projects.managing.length > 0 || projects.member.length > 0">
+        <div class="flex" v-if="projects && projects.managing.length > 0 || projects && projects.member.length > 0">
             <el-divider content-position="left">
                 <el-tag>Owned</el-tag>
             </el-divider>
@@ -34,7 +34,7 @@
                             <span>{{project.description}}</span>
                         </div>
                     </el-card>
-<!--                    <ProjectCard :project="project" />-->
+                    <!--                    <ProjectCard :project="project" />-->
                 </el-col>
             </el-row>
             <el-divider content-position="left">
@@ -69,7 +69,7 @@
             </el-row>
         </div>
 
-        <div v-else class="column flex v-center h-center">
+        <div class="column flex v-center h-center" v-else>
             <i class="el-icon-folder-checked icon-class"></i>
             <p style="font-size: 16pt">You don't have any projects</p>
         </div>

@@ -6,6 +6,10 @@
                     <div class="flex">
                         <AttachmentUploader ref="attachmentUploader" size="large" text="Select files" type="info"/>
                     </div>
+<!--                    <el-divider></el-divider>-->
+                    <div class="padding-top-20">
+                        <el-input type="textarea" v-model="description" placeholder="Description" />
+                    </div>
                     <el-divider></el-divider>
                     <div>
                         <el-button @click="submit" type="primary">Upload</el-button>
@@ -31,6 +35,7 @@
                                         <span class="flex" style="font-weight: 500">
                                             <Attachment :attachment="att" size="medium"/>
                                         </span>
+                                <span v-html="att.description"></span>
                                 <span class="padding-right-10 padding-top-10"
                                       style="font-style: italic; font-size: 10pt">
                                             <span>
@@ -40,10 +45,21 @@
                                             <span><el-tag size="mini" type="info">{{att.createdDate | moment("HH:mm DD/MM/YYYY")}}</el-tag></span>
                                         </span>
                             </div>
-                            <el-button @click="deleteAttachment(att)" icon="el-icon-delete" size="small"
-                                       v-if="currentUser.id === att.createdBy.id">Delete
-                            </el-button>
+                            <div class="row v-center">
+                                <el-image v-if="isImage(att)"
+                                          style="width: 70px; height: 70px; border: 1px dashed #aaa"
+                                        :src="att.url"
+                                        :preview-src-list="[att.url]">
+                                </el-image>
+                                <div class="padding-left-20">
+                                    <el-button @click="deleteAttachment(att)" icon="el-icon-delete" size="small"
+                                               v-if="currentUser.id === att.createdBy.id">Delete
+                                    </el-button>
+                                </div>
+                            </div>
+
                         </div>
+
                     </el-card>
                 </div>
             </div>
@@ -68,6 +84,7 @@
         },
         data() {
             return {
+                description: null,
                 listAttachments: [],
                 currentUser: {},
             }
@@ -77,10 +94,14 @@
             this.currentUser = AuthService.getCurrentUser();
         },
         methods: {
+            isImage(att){
+                return att.type.includes("image");
+            },
             submit() {
                 let vm = this;
                 let params = new FormData();
                 params.append("projectId", new Blob([JSON.stringify(vm.projectId)], {type: 'application/json'}));
+                params.append("description", new Blob([vm.description], {type: 'application/json'}));
                 let selectedFiles = vm.$refs.attachmentUploader.getUploadFiles();
                 if (selectedFiles.length <= 0) return;
                 selectedFiles.forEach(file => {
@@ -90,6 +111,7 @@
                     AlertService.success("Upload successfully");
                     vm.clearFiles();
                     vm.loadData();
+                    vm.description = null;
                 }).catch(error => {
                     AlertService.error("Upload failed");
                 })
