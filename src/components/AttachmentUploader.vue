@@ -7,7 +7,7 @@
             multiple
             :on-change="checkFile"
             :auto-upload="false">
-        <el-button class="width-100" :type="type" slot="trigger" :size="size">
+        <el-button :disabled="disabled" class="width-100" :type="type" slot="trigger" :size="size">
             <el-icon name="paperclip"/>
             {{text}}
         </el-button>

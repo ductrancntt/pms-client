@@ -1,5 +1,5 @@
 <template>
-    <div id="kanban" style="overflow-y: hidden" v-loading="isLoading">
+    <div id="kanban" style="overflow-y: hidden">
         <div class="padding-10 row flex">
             <div class="row flex v-center">
                 <el-row :gutter="10">
@@ -256,6 +256,24 @@
                 type: Number,
                 required: true,
             }
+        },
+        mounted() {
+            let vm = this;
+            this.$nextTick(function() {
+                let socket = new SockJS("http://localhost:8888/websocket");
+                vm.$utils.stompClient = Stomp.over(socket);
+                vm.$utils.stompClient.connect(
+                    {},
+                    function(frame) {
+                        vm.$utils.stompClient.subscribe("/info/task", function(val) {
+                            console.log(val.body);
+                            setTimeout(function () {
+                                vm.loadData();
+                            },200);
+                        });
+                    }
+                );
+            });
         },
         computed: {
             dragOptions() {

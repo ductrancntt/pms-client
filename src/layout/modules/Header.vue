@@ -8,18 +8,19 @@
         <div class="row flex-2">
             <el-row class="row flex h-center">
                 <el-col :span="16">
-<!--                    <el-input placeholder="Search" size="small">-->
-<!--                        <i class="el-input__icon el-icon-search" slot="prefix"></i>-->
-<!--                    </el-input>-->
+                    <!--                    <el-input placeholder="Search" size="small">-->
+                    <!--                        <i class="el-input__icon el-icon-search" slot="prefix"></i>-->
+                    <!--                    </el-input>-->
                 </el-col>
             </el-row>
         </div>
         <div class="row flex v-center align-right">
             <div class="padding-right-40">
                 <el-dropdown trigger="click">
-                    <el-badge :hidden="!hasNewNotification" class="el-dropdown-link" is-dot>
+                    <el-badge :hidden="!hasNewNotification || numberUnseen === 0" :value="numberUnseen"
+                              class="el-dropdown-link">
                         <el-button circle class="text-white" icon="el-icon-message-solid"
-                                   style="font-size: 16pt; padding: 8px" type="text"></el-button>
+                                   style="font-size: 16pt; padding: 8px" type="text"/>
                     </el-badge>
                     <el-dropdown-menu class="notification" slot="dropdown">
                         <el-dropdown-item class="notification-item padding-10" v-if="notifications.length == 0">
@@ -27,11 +28,11 @@
                         </el-dropdown-item>
                         <el-dropdown-item :key="notif.notificationId" class="notification-item"
                                           v-for="notif in notifications">
-                            <NotificationItem :user-notification="notif"/>
+                            <NotificationItem :user-notification="notif" @click.native="recount(notif)"/>
                         </el-dropdown-item>
                         <el-dropdown-item class="row h-center">
                             <el-button :disabled="notifications.length == 0" type="text"><span
-                                    style="font-weight: bold;">Mark all as read!</span></el-button>
+                                    @click="markAllRead" style="font-weight: bold;">Mark all as read!</span></el-button>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -43,15 +44,20 @@
                     <i class="el-icon-arrow-down"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="navigateTo('userProject')" class="padding-left-10 padding-right-10">My Project
+                    <el-dropdown-item @click.native="navigateTo('userProject')"
+                                      class="padding-left-10 padding-right-10">My Project
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('userInvitation')" class="padding-left-10 padding-right-10">My Invitation
+                    <el-dropdown-item @click.native="navigateTo('userInvitation')"
+                                      class="padding-left-10 padding-right-10">My Invitation
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('profile')" class="padding-left-10 padding-right-10">My Profile
+                    <el-dropdown-item @click.native="navigateTo('profile')" class="padding-left-10 padding-right-10">My
+                        Profile
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('changePassword')" class="padding-left-10 padding-right-10">Change Password
+                    <el-dropdown-item @click.native="navigateTo('changePassword')"
+                                      class="padding-left-10 padding-right-10">Change Password
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="navigateTo('loginPage')" class="padding-left-10 padding-right-10">Logout
+                    <el-dropdown-item @click.native="navigateTo('loginPage')" class="padding-left-10 padding-right-10">
+                        Logout
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -70,11 +76,29 @@
     export default {
         name: "Header",
         components: {NotificationItem, UserAvatar},
+        mounted() {
+            let vm = this;
+            this.$nextTick(function () {
+                let socket = new SockJS("http://localhost:8888/websocket");
+                vm.$utils.stompClient = Stomp.over(socket);
+                vm.$utils.stompClient.connect(
+                    {},
+                    function (frame) {
+                        vm.$utils.stompClient.subscribe("/info/notification", function (val) {
+                            setTimeout(function () {
+                                vm.loadData();
+                            }, 200);
+                        });
+                    }
+                );
+            });
+        },
         data() {
             return {
                 user: Auth.getCurrentUser() ? Auth.getCurrentUser() : {},
                 notifications: [],
                 hasNewNotification: false,
+                numberUnseen: null,
             }
         },
         created() {
@@ -85,19 +109,46 @@
             vm.loadData();
         },
         methods: {
+            markAllRead() {
+                let vm = this;
+                for (let i = 0; i < vm.notifications.length; i++) {
+                    if (vm.notifications[i].status === 'UNSEEN') {
+                        UserNotificationService.userSeenNotification(vm.notifications[i].notificationId)
+                    }
+                    vm.$set(vm.notifications[i], 'status' , 'SEEN');
+                }
+                vm.numberUnseen = 0;
+            },
             navigateTo(routeName) {
                 if (routeName === 'loginPage') Auth.logout();
                 this.$router.push({name: routeName});
+            },
+            recount(item) {
+                let count = 0;
+                let vm = this;
+                vm.notifications.forEach(notif => {
+                    if (item && notif.notificationId === item.notificationId) notif.status = 'SEEN';
+                    if (notif.status === 'UNSEEN') {
+                        count++;
+                        vm.hasNewNotification = true;
+                    }
+                });
+                vm.numberUnseen = count;
             },
             loadData() {
                 let vm = this;
                 UserNotificationService.getByUser().then(response => {
                     vm.notifications = response;
+                    let count = 0;
                     vm.notifications.forEach(notif => {
-                        if (notif.status === 'UNSEEN') vm.hasNewNotification = true;
-                    })
+                        if (notif.status === 'UNSEEN') {
+                            count++;
+                            vm.hasNewNotification = true;
+                        }
+                    });
+                    vm.numberUnseen = count;
                 })
-            }
+            },
         }
     }
 </script>

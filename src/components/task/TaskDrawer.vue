@@ -120,7 +120,7 @@
                                 </el-card>
                             </div>
                             <div v-if="task.status !== 'VERIFIED'">
-                                <AttachmentUploader :on-change="changeReportFile" ref="reportUploader" size="mini" text="Submit files" type="info"/>
+                                <AttachmentUploader :disabled="isArchived" :on-change="changeReportFile" ref="reportUploader" size="mini" text="Submit files" type="info"/>
                             </div>
                             <div class="padding-top-10 padding-bottom-10" v-if="hasReportFile">
                                 <el-button size="mini" @click="submitReport" type="primary">Upload</el-button>
