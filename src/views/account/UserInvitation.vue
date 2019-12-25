@@ -1,6 +1,6 @@
 <template>
     <div class="width-100 row h-center padding-20">
-        <el-col :span="8">
+        <el-col :span="10">
             <el-alert
                     v-if="!userInvitations.length"
                     title="Empty!"

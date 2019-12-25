@@ -181,7 +181,7 @@
                                             :label="item.firstName + ' ' + item.lastName"
                                             :value="item.id"
                                             v-for="item in task.unassignedUsers">
-                                        <span style="float: left"><UserAvatar :user="item"/></span>
+                                        <span style="float: left"><UserAvatar :is-router="false" :user="item"/></span>
                                         <span class="padding-left-10" style="font-size: 13px">
                                     {{item.firstName}} {{item.lastName}}
                                 </span>
@@ -209,7 +209,7 @@
                             <InputLabel label="Members in Task (Click avatar to remove)"/>
                             <div class="row">
                                 <div :key="user.id" style="align-items: flex-end" v-for="user in task.assignedUsers">
-                                    <UserAvatar :size="25" :user="user" @click.native="removeUser(user)"
+                                    <UserAvatar :is-router="false" :size="25" :user="user" @click.native="removeUser(user)"
                                                 shape="circle" style="padding-left: 3px"/>
                                 </div>
                             </div>

@@ -1,5 +1,5 @@
 # stage 1 -
-FROM node:8.15.0-alpine as vue-build
+FROM node:12.14.0-alpine as vue-build
 WORKDIR /app
 COPY ./package.json /app
 RUN npm install
