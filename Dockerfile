@@ -10,10 +10,10 @@ RUN npm run build
 # Stage 2 - the production environment
 FROM nginx:alpine
 
-RUN rm -rf /var/www/html/*
+RUN rm -rf /usr/share/nginx/html/*
 COPY nginx_config/nginx.conf /etc/nginx/nginx.conf
 COPY nginx_config/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=vue-build /app/dist /var/www/html
+COPY --from=vue-build /app/build /usr/share/nginx/html
 RUN chown nginx:nginx /var/www/html
 
 CMD ["nginx", "-g", "daemon off;"]
