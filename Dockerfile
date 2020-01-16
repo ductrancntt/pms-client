@@ -1,19 +1,13 @@
-# stage 1 -
-FROM node:12.13.0-alpine as vue-build
+# build stage
+FROM node:lts-alpine as build-stage
 WORKDIR /app
-COPY ./package.json /app
+COPY package*.json ./
 RUN npm install
-
-COPY . /app
+COPY . .
 RUN npm run build
 
-# Stage 2 - the production environment
-FROM nginx:alpine
-
-RUN rm -rf /var/www/html/*
-COPY nginx_config/nginx.conf /etc/nginx/nginx.conf
-COPY nginx_config/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=vue-build /app/dist /var/www/html
-RUN chown nginx:nginx /var/www/html
-
+# production stage
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
